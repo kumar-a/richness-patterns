@@ -4,7 +4,7 @@
 \*Corresponding author: dranand1212@gmail.com; ansingh@pu.ac.in  
 <sup>#</sup>Maintainer: abhikumar.pu@gmail.com
 
-## Direct structure
+## Directory structure
 
 ```
 .
@@ -62,7 +62,7 @@
 | [site_spec_elev.csv](/data/site_spec_elev.csv) | Finally prepared dataset for standardised unique species and their elevational ranges for selected study sites |
 | [siwalik_states.gpkg](/data/siwalik_states.gpkg) | Spatial boundaries for north-western Indian States covering the Siwalik foothills of Himalayas |
 | [apa6.csl](/apa6.csl) | Citation Style Language citation styles for American Psychological Association 6th edition |
-| [calc_richness.R](/data/calc_richness.R) | `R` script with function used to calculate species richness from compiled dataset and MDE null model | 
+| [calc_richness.R](/calc_richness.R) | `R` script with function used to calculate species richness from compiled dataset and MDE null model | 
 | [credit_author.csv](/credit_author.csv) | Documentation of each authors' contribution in CRediT (Contributor Roles Taxonomy) author statement |
 | [extract_climate.R](/extract_climate.R) | `R` script to extract climate data from WorldClim2 database and process to prepare Walter-Leith Diagrams for study sites |
 | [index.qmd](/index.qmd) | Quarto markdown file with embedded `R` codes to reproduce the initial draft of manuscript |
