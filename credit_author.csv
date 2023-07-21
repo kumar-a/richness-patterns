@@ -1,0 +1,15 @@
+﻿ID,Contribution,AK,MP,PK,ANS
+1,Conceptualisation,equal,equal,supporting,equal
+2,Methodology,lead,supporting,supporting,supporting
+3,Resources,equal,equal,equal,equal
+4,Investigation,equal,equal,equal,supporting
+5,Data curation,lead,supporting,supporting,equal
+6,Formal analysis,lead,supporting,supporting,supporting
+7,Visualisation,lead,equal,supporting,NA
+8,Software,lead,NA,NA,NA
+9,Validation,equal,equal,supporting,equal
+10,Writing – original draft,lead,equal,equal,supporting
+11,Writing – review & editing,equal,equal,equal,lead
+12,Supervision,NA,NA,NA,lead
+13,Project administration,NA,NA,NA,lead
+14,Funding acquisition,equal,equal,equal,NA
