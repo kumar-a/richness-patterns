@@ -1,5 +1,6 @@
-## Author: Abhishek Kumar
-## Email: abhikumar.pu@gmail.com
+# Author: Abhishek Kumar
+# Affiliation: Panjab University, Chandigarh
+# Email: abhikumar.pu@gmail.com
 
 library(tidyverse)
 

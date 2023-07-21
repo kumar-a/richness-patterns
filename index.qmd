@@ -34,35 +34,26 @@ format:
     toc: true
     toc-depth: 3
     default-image-extension: svg
-  
-  pdf:
-    documentclass: scrartcl
-    papersize: letter
-    number-sections: false
-    mainfont: Arial
-    fontsize: 10pt
-    linestretch: 1.5
-    sansfont: Arial
-    colorlinks: true
-    link-citations: true
-    citecolor: "#0000ff"
-    default-image-extension: pdf
-    code-block-bg: true
+
+knitr:
+  opts_chunk: 
+    collapse: true
+    comment: "#>"
+    message: false
+    R.options:
+      knitr.graphics.auto_pdf: true
+execute: 
+  echo: true
+  eval: true
+  warning: false
 ---
 
-```{r setup, include=FALSE}
-
-knitr::opts_chunk$set(
-  comment = "#>", echo = FALSE, eval = TRUE, message = FALSE, warning = FALSE
-)
-
-## load packages
+```{r setup}
+## load required packages
 library(DHARMa)         ## GLM model diagnostics
 library(rstatix)        ## statistical hypothesis testing
-library(sf)             ## vector data handling
 library(terra)          ## raster data handling
 library(tidyverse)      ## general data manipulation and visualisation
-library(tmap)           ## visualising spatial data
 
 ## colour palette for study sites
 mycol <- c("Morni"     = "#e69f00", "Chail" = "#009e73", 
@@ -97,174 +88,25 @@ Understanding the elevational patterns of species distributions is a pre-requisi
 
 # Methodology
 
-```{r eval=FALSE}
-## boundaries for protected aras boundary
-mh <- st_read("data/morni.gpkg", quiet = TRUE) |> 
-  summarise() |> mutate(Name = "Morni Hills") |> st_transform(4326)
-khr <- st_read("data/khol_hi_raitan.gpkg", quiet = TRUE) |>
-  filter(Type == "WLS") |> mutate(Name = "KHR WLS")
-chail <- st_read("data/chail.gpkg", quiet = TRUE) |> 
-  summarise() |> mutate(Name = "Chail")
-churdhar <- st_read("data/chur.gpkg", quiet = TRUE) |> 
-  summarise() |> mutate(Name = "Churdhar")
-study_area <- bind_rows(mh, chail, churdhar)
-  
-## bounding box for main map
-ssb <- st_bbox(c(xmin = 76.75, ymin = 30.54, xmax = 77.56, ymax = 31.02),
-               crs = st_crs(4326)) |> st_as_sfc()
-
-## Download and save elevation data
-# ssb |> elevatr::get_elev_raster(z = 10) |>
-#   rast() |> crop(vect(ssb)) |> writeRaster("data/site_elev.tif")
-
-elev <- rast("data/site_elev.tif")
-
-## Calculate hillshade
-slope  <- terrain(elev, "slope",  unit = "radians")
-aspect <- terrain(elev, "aspect", unit = "radians")
-hs <- shade(slope, aspect)
-
-## state level boundaries
-ind1 <- st_read("data/siwalik_states.gpkg", quiet = TRUE) |>
-  st_transform(crs = st_crs(4326)) |>
-  ## Remove Rajasthan from Text labels
-  mutate(STATE = case_when(
-    STATE == "Himachal Pradesh" ~"HP",
-    STATE == "Punjab" ~"PB"
-  ))
-
-## District level boundaries
-ind2 <- st_read("data/site_districts.gpkg", quiet = TRUE) |>
-  st_intersection(ssb) |>
-  mutate(District = ifelse(test = District %in% c("Ambala", "Patiala"), 
-                           yes = NA, no = District))
-
-## switch off spherical geometry
-sf_use_s2(FALSE) 
-
-## Make the map
-main_map <- tm_shape(hs) + 
-  tm_raster(palette = "-Greys", legend.show = FALSE) +
-  tm_graticules(lines = FALSE, labels.size = 0.75) +
-  tm_shape(elev) + 
-  tm_raster(alpha = 0.2, title = "Elevation (m)", legend.reverse = TRUE) +
-  
-  tm_shape(ind2) + tm_borders(col = "black", lwd = 1.25) + 
-  tm_text("District", bg.color = "white", bg.alpha = 0.6, 
-          xmod = c(Chandigarh = 0.7, Shimla = -9, Sirmaur = 0, Solan = 0, 
-                   NA, Panchkula = 0.75, NA, "SAS Nagar" = 0.75), 
-          ymod = c(Chandigarh = 0, Shimla = 3.75, Sirmaur = 0, Solan = 0, 
-                   NA, Panchkula = -4.5, NA, "SAS Nagar" = -1)) +
-  tm_shape(ind1, bbox = st_bbox(ssb)) + tm_borders(lwd = 1.5, col = "black") +
-  
-  tm_shape(study_area) + 
-  tm_fill(col = "palegreen1", alpha = 0.4) +
-  tm_borders(col = "darkgreen", lwd = 2) +
-  tm_text("Name", shadow = T, size = 1,
-          xmod = c("Morni Hills" = 0.2, Chail = 0, Churdhar = 0),
-          ymod = c("Morni Hills" = 1, Chail = 0.1, Churdhar = 0.5)) +  
-  tm_shape(khr) + tm_borders(col = "darkgreen", lwd = 1) + 
-  tm_text("Name", shadow = T, size = 0.75) +
-  
-  tm_compass(position = c(0.975, 0.975), just = c("right", "top"), 
-             bg.color = "white", bg.alpha = 0.5) +
-  tm_scale_bar(position = c(0.75, 0.025), just = c(1, 0), text.size = 0.75, 
-               breaks = c(0, 5, 10), bg.color = "white", bg.alpha = 0.5) +
-  tm_layout(legend.bg.color = "grey85", legend.bg.alpha = 0.9,
-            legend.position = c(0.025, 0.975), legend.just = c(0, 1),
-            legend.text.size = 0.85, legend.title.size = 1.25)
-
-## bounding box for inset map
-sbox <- st_bbox(c(xmin = 75, ymin = 29, xmax = 79, ymax = 33),
-               crs = st_crs(4326)) |> st_as_sfc()
-
-## state level boundaries
-ind1 <- st_read("data/siwalik_states.gpkg", quiet = TRUE) |>
-  st_transform(crs = st_crs(4326)) |>
-  ## Remove Rajasthan from Text labels
-  mutate(STATE = case_when(
-    STATE == "Himachal Pradesh" ~"HP", STATE == "Punjab" ~"PB",
-    STATE == "Haryana" ~"HR"
-  ))
-
-## Prepare inset map
-inset_map <- tm_shape(ind1, bbox = st_bbox(sbox)) +
-  tm_fill(col = "grey80", alpha = 0.2) + tm_borders(col = "grey40") + 
-  tm_text("STATE", remove.overlap = TRUE) +
-  
-  tm_shape(ssb) + 
-  tm_fill(col = "lightpink", alpha = 0.3) + tm_borders(col = "red")
-
-## arrange and save maps
-myvp <- grid::viewport(
-  x = 0.975, y = 0.11, just = c("right", "bottom"), 
-  width = unit(1.5, "inches"), height = unit(1.5, "inches")
-)
-
-# tmap_save(main_map, filename = "figs/site_map.pdf", insets_tm = inset_map,
-#           insets_vp = myvp, height = 5, width = 7, units = "in")
-# tmap_save(main_map, filename = "figs/site_map.png", insets_tm = inset_map,
-#           insets_vp = myvp, height = 5, width = 7, units = "in", dpi = 600)
-```
-
-```{r eval=FALSE}
-# ## bounding box of study area
-# ssb <- st_bbox(c(xmin = 76.75, ymin = 30.54, xmax = 77.56, ymax = 31.02),
-#                crs = st_crs(4326)) |> st_as_sfc()
-# 
-# mypath <- "E:/spatial-data/climate/wc2.1_country/IND_wc2.1_30s_"
-# 
-# ## monthly precipitation
-# sprec <- paste0(mypath, "prec.tif") |> rast() |> crop(vect(ssb))
-# names(sprec) <- month.abb
-# 
-# ## monthly minimum temperature
-# tmin <- paste0(mypath, "tmin.tif") |> rast() |> crop(vect(ssb))
-# names(tmin) <- month.abb
-# 
-# ## monthly maximum temperature
-# tmax <- paste0(mypath, "tmax.tif") |> rast() |> crop(vect(ssb))
-# names(tmax) <- month.abb
-# 
-# ## Boundary for study area
-# mh <- st_read("data/morni.gpkg", quiet = TRUE) |>
-#   summarise() |> mutate(Name = "Morni Hills") |> st_transform(4326)
-# chail <- st_read("data/chail.gpkg", quiet = T) |>
-#   summarise() |> mutate(Name = "Chail")
-# churdhar <- st_read("data/chur.gpkg", quiet = T) |>
-#   summarise() |> mutate(Name = "Churdhar")
-# sites_all <- bind_rows(mh, chail, churdhar) |> summarise() |> mutate(Name = "All")
-# study_area <- bind_rows(mh, chail, churdhar, sites_all)
-# 
-# ## WorlClim site data
-# bind_rows(
-#   sprec |> terra::extract(study_area, fun = mean) |> mutate(Clim = "prec"),
-#   tmax  |> terra::extract(study_area, fun = mean) |> mutate(Clim = "tmax"),
-#   tmin  |> terra::extract(study_area, fun = mean) |> mutate(Clim = "tmin"),
-#   tmin  |> terra::extract(study_area, fun = mean) |> mutate(Clim = "abstmin")
-# ) |>
-#   mutate(ID = factor(
-#     ID, levels = c(1:4),
-#     labels = c("Morni Hills", "Chail WLS", "Churdhar WLS", "All Sites")
-#   )) |>
-#   select(ID, Clim, Jan:Dec) |>
-#   write.csv("data/site_climate_wld.csv", row.names = F)
-```
-
-
 ## Study sites
 
 Western Himalayas represent the prominent mountain ranges spanning over the Jammu & Kashmir, Himachal Pradesh, Uttarakhand and parts of Punjab and Haryana in India. The present study focused on a combination of protected areas (wildlife sanctuaries) and their adjoining forested landscapes within the Western Himalayas. Specifically, we selected the Morni Hills (including Khol Hi-Raitan Wildlife Sanctuary), Chail Wildlife Sanctuary, and Churdhar Wildlife Sanctuary of Western Himalayas based on their ecological significance and accessibility. The Morni Hills (300--1500 m) is located in the the Panchkula district of Haryana, Chail WLS (900--2100 m) is shared by Solan and Shimla district of Himachal Pradesh, and Churdhar WLS (1600--3600 m) is shared by Sirmaur and Shimla districts of Himachal Pradesh (@fig-sites). Overall, these three sites provided a wider elevational gradient ranging from 300 m in the lower foothills to over 3600 m at the Churdhar Peak. The diverse ecological zones and topographic variation of these sites offered us an ideal setting to investigate the elevational patterns of plant species richness in Western Himalayas.
 
-![Geographic location and elevation profile of Morni Hills, Chail WLS and Churdhar WLS in Western Himalayas. The Khol Hi-Raitan WLS is located in the western part of the Morni Hills. The inset map shows that the study sites are located in the southern part of Himachal Pradesh (HP) and northern part of Haryana (HR) state.](figs/site_map.png){#fig-sites}
+```{r}
+## prepare and save the site map
+source("site_map.R")
+```
+
+
+![Geographic location and elevation profile of Morni Hills, Chail WLS and Churdhar WLS in Western Himalayas. The Khol Hi-Raitan WLS is located in the western part of the Morni Hills. The inset map shows that the study sites are located in the southern part of Himachal Pradesh (HP) and northern part of Haryana (HR) state.](figs/fig1.png){#fig-sites}
 
 ```{r eval=FALSE}
 # wld.plot <- function(sitename, ...){
-#   
-#   read.csv("data/site_climate_wld.csv") |> 
+# 
+#   read.csv("data/site_climate_wld.csv") |>
 #     filter(ID == {{sitename}}) |>
 #     select(-c(ID, Clim)) |>
-#     climatol::diagwl(cols = NULL, stname = sitename, mlab = "en", 
+#     climatol::diagwl(cols = NULL, stname = sitename, mlab = "en",
 #                      per = "1970 to 2000", ...)
 # }
 # 
@@ -287,7 +129,7 @@ Western Himalayas represent the prominent mountain ranges spanning over the Jamm
 
 The selected study areas exhibit substantial variations in climate conditions due to large variations in elevation and topography (@fig-site-climate). Generally, the climate can be divided into three seasons, i.e., summer, monsoon, and winters. The climate varies from hot semi-arid (BSh) at foothills to monsoonal warm-summer humid continental climate (Dwb) near the Chur Peak. The Morni Hills represent the hot semi-arid (BSh) to monsoonal dry-winter humid subtropical climates (Cwa), the Chail WLS represent the monsoonal humid subtropical climate (Cwa) to monsoonal dry-winter subtropical highland climate (Cwb), and the the Churdhar WLS represent the monsoonal dry-winter subtropical highland climate (Cwb) to monsoonal warm-summer humid continental climate (Dwb) near the Chur Peak [@Beck2018]. 
 
-![@Walter1967 climate diagrams for Morni Hills (topleft), Chail WLS (topright), Churdhar WLS (bottomleft) and All Sites (bottomright) showing the variation in average monthly temperature (shown in red) and precipitation (shown in blue) for 1970 to 2000. The text in top-left corner of each plot represent the name of the site with its elevation range in parenthesis and the period for which climate data is represented. Similarly, the text in top-right corner of each plot shows the mean annual temperature (&deg;C) and mean annual precipitation (mm). The x-axis denotes the months and likely frost months are filled with sky blue. The left y-axis represent the temperature in &deg;C (with red text), whereas the right y-axis depicts the precipitation in mm (with blue text). The minimum average temperature of the coldest month and maximum average temperature of the hottest month are represented on the left y-axis with black text. Above 100 mm precipitation, the scale of right y-axis is increased from 2 mm/&deg;C to 20 mm/&deg;C and this change in scale is marked by the black horizontal line in each plot. The area filled with red dots represent the dry period where the precipitation curve falls below the temperature curve. Similarly, the area filled with blue vertical lines shows the humid period where the precipitation curve falls above the temperature curve. The area filled in solid blue indicates the wet period where the precipitation curve falls above the black horizontal line represent the precipitation above 100 mm. The climate data was accessed from @Fick2017.](figs/site_climate){#fig-site-climate}
+![@Walter1967 climate diagrams for Morni Hills (topleft), Chail WLS (topright), Churdhar WLS (bottomleft) and All Sites (bottomright) showing the variation in average monthly temperature (shown in red) and precipitation (shown in blue) for 1970 to 2000. The text in top-left corner of each plot represent the name of the site with its elevation range in parenthesis and the period for which climate data is represented. Similarly, the text in top-right corner of each plot shows the mean annual temperature (&deg;C) and mean annual precipitation (mm). The x-axis denotes the months and likely frost months are filled with sky blue. The left y-axis represent the temperature in &deg;C (with red text), whereas the right y-axis depicts the precipitation in mm (with blue text). The minimum average temperature of the coldest month and maximum average temperature of the hottest month are represented on the left y-axis with black text. Above 100 mm precipitation, the scale of right y-axis is increased from 2 mm/&deg;C to 20 mm/&deg;C and this change in scale is marked by the black horizontal line in each plot. The area filled with red dots represent the dry period where the precipitation curve falls below the temperature curve. Similarly, the area filled with blue vertical lines shows the humid period where the precipitation curve falls above the temperature curve. The area filled in solid blue indicates the wet period where the precipitation curve falls above the black horizontal line represent the precipitation above 100 mm. The climate data was accessed from @Fick2017.](figs/fig2){#fig-site-climate}
 
 The Morni Hills (300--1500 m) harbours the tropical mixed dry deciduous forests at lower elevations and Siwalik Chir Pine forests at higher elevations. The Chail WLS (900--2100 m) comprise of subtropical Pine forests at lower elevations, followed by Oak forests and moist Deodar forests at higher elevations with occasional presence of Blue Pines. The Churdhar WLS (1600--3600) encompasses mixed coniferous forests at lower elevations followed by Kharsu Oak forests and alpine pastures at higher elevations [@Champion1968]. Thus, these sites represent a diverse range of plant communities, ranging from temperate forests of oak and rhododendron to alpine meadows adorned with vibrant wild-flowers. These diverse forests are home to some  Endangered (*Aconitum heterophyllum*, *Angelica glauca*, *Cypripedium himalaicum*, *Dactylorhiza hatagirea*, *Picrorhiza kurroa*, *Taxus wallichiana* and *Trillium govanianum*), Vulnerable (*Cypripedium cordigerum*, *Malaxis muscifera* and *Paris polyphylla*), and Near Threatened (*Abies spectabilis*) vascular plants according to the recent assessment [@IUCN2023]. Similarly, numerous endemic wild animals like Himalayan musk deer and Himalayan brown bear thrive in the study areas. The Chail WLS and Churdhar WLS are included in the Important Bird and Biodiversity Areas of the BirdLife International [@Rahmani2016] and provide home to some threatened birds including the Cheer Pheasant (*Catreus wallichii*), Himalayan Monal (*Lophophorus impejanus*), Indian Vulture (*Gyps indicus*), Koklass Pheasant (*Pucrasia macrolopha*), Red-headed Vulture (*Sarcogyps calvus*), and White-rumped Vulture (*Gyps bengalensis*).
 
@@ -662,11 +504,11 @@ cowplot::plot_grid(
   nrow = 1, labels = c("a) Species", "b) Genus", "c) Family"),
   label_x = -0.125, label_size = 12
 )
-# ggsave(filename = "figs/species_venn.pdf", width = 7, height = 3, units = "in")
-# ggsave(filename = "figs/species_venn.svg", width = 7, height = 3, units = "in")
+# ggsave(filename = "figs/fig3.pdf", width = 7, height = 3, units = "in")
+# ggsave(filename = "figs/fig3.svg", width = 7, height = 3, units = "in")
 ```
 
-![Venn diagram illustrating the percent distribution of (a) species (n = 1385), (b) genera (n = 748), and (c) families (n = 145) across the selected sites. Each circle represents a specific site and the overlapping areas represent shared taxa, while the non-overlapping regions indicate unique taxa for each site. The diagram provides insights into the shared and site-specific taxa composition across the study sites.](figs/species_venn){#fig-venn}
+![Venn diagram illustrating the percent distribution of (a) species (n = 1385), (b) genera (n = 748), and (c) families (n = 145) across the selected sites. Each circle represents a specific site and the overlapping areas represent shared taxa, while the non-overlapping regions indicate unique taxa for each site. The diagram provides insights into the shared and site-specific taxa composition across the study sites.](figs/fig3){#fig-venn}
 
 Out of total 1385 species, 50 species were recorded from all the sites. Morni Hills, Chail WLS and Churdhar WLS had 515, 153, and 402 unique species, respectively. The Chail WLS and Churdhar WLS shared highest number of plant species (n = 134), whereas minimum species (n = 30) were shared by Morni Hills and Churdhar WLS (@fig-venn a). Similarly, about 97 genera were common to All Sites and Morni Hills comprised of greatest number of unique plant genera (n = 263) followed by Churdhar WLS (n = 138), whereas Chail WLS had lowest number of unique genera (n = 53). The Chail WLS shared highest number of genera (n = 86) with Morni Hills and Churdhar WLS, whereas only 25 genera were shared by the Morni Hills and Churdhar WLS (@fig-venn b). In terms of families, taxa from 65 families were common to all the sites and Morni Hills represent highest number of unique families. Morni Hills, Chail WLS and Churdhar WLS represented taxa from 24, 7, and 10 families, respectively. Generally, there was high similarity in taxa for Chail WLS and Churdhar WLS, whereas Morni Hills and Churdhar WLS exhibited unique taxonomic composition of plants. Among the families of the recorded species (@tbl-dom-families), Fabaceae was most dominant with 133 species across All Sites followed by Asteraceae (n = 109), Poaceae (n = 93), Lamiaceae (n = 58) and Rosaceae (n = 43). Family Fabaceae (n = 105) was dominant in Morni Hills whereas family Asteraceae was dominant in Chail WLS (n = 41) and Churdhar WLS (n = 47).
 
@@ -722,6 +564,8 @@ read.csv("data/band_richness.csv") |>
   scale_fill_manual(values  = myfill) +
   labs(x = "", y = "Species richness") +
   theme(legend.position = "none")
+
+# ggsave(filename = "figs/fig4.pdf", width = 7, height = 5, units = "in")
 ```
 
 ## Elevational patterns of species richness
@@ -863,6 +707,8 @@ ggarrange(
     left = text_grob("Species richness", rot = 90, size = 14),
     bottom = text_grob("Elevation (km)", size = 14)
   )
+
+# ggsave(filename = "figs/fig5.pdf", width = 7, height = 5, units = "in")
 ```
 
 The Wald's test suggested that elevation is indeed significantly associated with species richness. All estimated coefficients were significantly different from zero, except the Intercept for Morni Hills (@tbl-esr-coef). The linear and cubic elevation terms were positively associated, whereas the quadratic and quartic elevation terms were negatively associated with species richness. The coefficient for linear elevation (Elev) was positive and highly significant for all the selected sites. However, the magnitude was highest for Morni Hills and it was lowest for Churdhar WLS, suggesting that the magnitude of increase in species richness is expected to be higher in Morni Hills than the Churdhar WLS (@tbl-esr-coef). Similarly, the coefficient for quadratic elevation (Elev^2^) was negative and highly significant for all the sites, suggesting a significant decrease in species richness at higher elevations. The Chail WLS and Churdhar WLS included only quadratic elevation terms, suggesting that the pattern does not exhibit significant non-linear patterns beyond the quadratic term. However, the Morni Hills included a significant cubic elevation (Elev^3^) and All Sites quartic elevation (Elev^4^), suggesting significant non-linear relationship between elevation and species richness.
@@ -934,9 +780,9 @@ chail_mde <- mde.plot("Chail", sitecol = "#009e73") +
            parse = TRUE)
 
 chur_mde <- mde.plot("Churdhar", sitecol = "#CC79A7") +
-  lims(x = c(60, 310), y = c(15, 600)) +
+  lims(x = c(60, 320), y = c(15, 600)) +
   annotate(geom = "text", size = 3.5, hjust = 0, color = "#CC79A7",
-           x = mypos(0.1, 60, 310), y = mypos(0.97, 15, 600),
+           x = mypos(0.1, 60, 320), y = mypos(0.97, 15, 600),
            label = "italic(y) == 298.9 + 0.07*italic(x)*','~~ italic(R)[adj]^2 == ~-0.06", 
            parse = TRUE)
 
@@ -957,6 +803,8 @@ ggarrange(
     left = text_grob("Observed richness", rot = 90, size = 14),
     bottom = text_grob("Predicted richness", size = 14)
   )
+
+# ggsave(filename = "figs/fig6.pdf", width = 7, height = 5, units = "in")
 ```
 
 ## Elevational pattern of residual species richness
@@ -1039,6 +887,8 @@ ggarrange(
     left = text_grob("Residual species richness", rot = 90, size = 14),
     bottom = text_grob("Elevation (km)", size = 14)
   )
+
+# ggsave(filename = "figs/fig7.pdf", width = 7, height = 5, units = "in")
 ```
 
 ```{r}
@@ -1411,14 +1261,14 @@ read.csv("data/band_richness.csv") |>
   labs(x = "Elevation (m)", y = "Species richness") +
   theme(legend.position = "none")
 
-# ggsave("figs/linear_elev_rich.pdf", width = 7, height = 5)
+# ggsave(filename = "figs/fig8.pdf", width = 7, height = 5, units = "in")
 ```
 
 ```{r fig.width=7, fig.height=7}
 #| label: fig-qqplot
 #| fig-cap: Quantile-quantile (Q-Q) plot demonstrating model diagnostics for elevational patterns of species richness in (a) Morni Hills, (b) Chail WLS, (c) Churdhar WLS, and (d) All Sites. The plot shows the overall deviations from the simulation-based expected distribution with added tests for correct distribution (KS test), dispersion and outliers. The outliers are defined as values outside the simulation envelope. The plot assesses the goodness-of-fit between observed and expected quantiles, aiding in the evaluation of model assumptions and performance.
 
-# pdf("figs/qqplot.pdf", width = 7, height = 7)
+# pdf("figs/fig9.pdf", width = 7, height = 7)
 
 par(mfrow = c(2, 2))
 bmod_morni |>
@@ -1449,7 +1299,7 @@ mtext("d)", line = 1.5, adj = 0, font = 2)
 #| label: fig-residual-plot
 #| fig-cap: Residual plots showing the deviations in model residuals against the model predictions for elevational patterns of species richness in (a) Morni Hills, (b) Chail WLS, (c) Churdhar WLS, and (d) All Sites. The deviation from the uniformity (in y-direction) was estimated by comparing the empirical 0.25, 0.5 and 0.75 quantiles in y-direction (red solid lines) with the theoretical 0.25, 0.5 and 0.75 quantiles (dashed black line). The  simulation-based outliers are highlighted as red stars.
 
-# pdf("figs/residual_plot.pdf", width = 7, height = 7)
+# pdf("figs/fig10.pdf", width = 7, height = 7)
 
 par(mfrow = c(2, 2))
 bmod_morni |>
@@ -1480,7 +1330,7 @@ mtext("d)", line = 2, adj = 0, font = 2)
 #| label: fig-dispersion-all
 #| fig-cap: Simulation-based (n &equals; 1000) dispersion test of the best model for All Site (full elevational gradient). This test compares the variance of the observed raw residuals (red line) against the variance of simulated residuals (histogram). The variances are scaled to the mean simulated variance. A significant ratio > 1 indicates overdispersion, a significant ratio < 1 underdispersion.
 
-# pdf("figs/dispersion_all.pdf", width = 7, height = 5)
+# pdf("figs/fig11.pdf", width = 7, height = 5)
 
 bmod_all |>
   simulateResiduals(n = 1000, refit = FALSE) |>
@@ -1504,7 +1354,7 @@ read.csv("data/band_mde.csv") |>
   ggplot(aes(x = Elevation, y = sres, color = site, fill = site)) +
   geom_hline(yintercept = 0, color = "grey", linetype = 2) +
   geom_smooth(method = "lm", alpha = 0.1) +
-  geom_point(shape = 21, size = 3, alpha = 0.75) +
+  geom_point(shape = 21, size = 3, color = "black", alpha = 0.75) +
   scale_color_manual(values = c("#e69f00", "#009e73", "#cc79a7", "#0072b2")) +
   scale_fill_manual(values  = c("#e69f00", "#009e73", "#cc79a7", "#0072b2")) +
   ggpubr::stat_cor(method = "pearson", cor.coef.name = "r",
@@ -1515,6 +1365,8 @@ read.csv("data/band_mde.csv") |>
   scale_y_continuous(expand = expansion(mult = c(0.1, 0.1))) +
   labs(x = "Elevation (m)", y = "Residual species richness") +
   theme(legend.position = "none")
+
+# ggsave(filename = "figs/fig12.pdf", width = 7, height = 5, units = "in")
 ```
 
 # References
