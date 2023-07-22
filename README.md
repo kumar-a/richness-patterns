@@ -1,5 +1,5 @@
 # Exploring Elevational Patterns of Plant Species Richness: Insights from Western Himalayas
-**Authors:** [Abhishek Kumar](https://akumar.netlify.app/)<sup>#</sup>, [Meenu Patil](https://www.researchgate.net/profile/Meenu-Patil), [Pardeep Kumar](https://www.researchgate.net/profile/Pardeep-Kumar-22), [Anand Narain Singh](https://www.researchgate.net/profile/Anand-Singh-15)\* 
+**Authors:** [Abhishek Kumar](https://akumar.netlify.app/)<sup>#</sup>, [Meenu Patil](https://www.researchgate.net/profile/Meenu-Patil), [Pardeep Kumar](https://www.researchgate.net/profile/Pardeep-Kumar-22), [Anand Narain Singh](https://www.researchgate.net/profile/Anand-Singh-15)\*   
 **Affiliation:** *Soil Ecosystem and Restoration Ecology Lab, Department of Botany, Panjab University, Chandigarh 160014, India*  
 \*Corresponding author: dranand1212@gmail.com; ansingh@pu.ac.in  
 <sup>#</sup>Maintainer: abhikumar.pu@gmail.com
