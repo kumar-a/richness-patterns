@@ -25,32 +25,31 @@ author:
     orcid: 0000-0002-0148-8680
     email: dranand1212@gmail.com
     affiliation: Panjab University, Chandigarh
+    
+date: last-modified
+date-format: "DD MMM YYYY"
 
 bibliography: refs.bib
 csl: apa6.csl
 
 format: 
   html:
+    number-sections: true
     toc: true
     toc-depth: 3
-    default-image-extension: svg
-
-knitr:
-  opts_chunk: 
-    collapse: true
-    comment: "#>"
-    message: false
-    R.options:
-      knitr.graphics.auto_pdf: true
-execute: 
-  echo: true
-  eval: true
-  warning: false
+    code-fold: true
 ---
 
-```{r setup}
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(
+  collapse = TRUE, comment = "#>", echo = FALSE, 
+  eval = TRUE, message = FALSE, warning = FALSE
+)
+
 ## load required packages
 library(DHARMa)         ## GLM model diagnostics
+library(ggpubr)         ## publication ready plots
 library(rstatix)        ## statistical hypothesis testing
 library(terra)          ## raster data handling
 library(tidyverse)      ## general data manipulation and visualisation
@@ -72,243 +71,66 @@ theme_set(
 
 # Abstract
 
-Understanding the patterns and drivers of species richness along elevational gradients is crucial for biogeographical, conservation and ecological research. This study aims to investigate the plant species richness across three sites at different elevations, examine the elevational patterns of species richness, compare the observed species richness with predictions of the mid-domain effect (MDE) null model, and assess the elevational pattern of residual species richness. We prepared a comprehensive database of the elevational distribution of plant species occurring at selected sites by combining information from field visits and published literature. We used rigorous statistical analyses and null model simulations to elucidate species richness patterns along elevational gradients. Our study revealed substantial differences in plant species richness across the three study sites. While the higher elevation site displayed a consistent decline in species richness with increasing elevation, others at lower and intermediate elevations exhibited a complex non-linear pattern. The entire elevational gradient demonstrated a non-linear unimodal pattern, with peak richness around intermediate elevations. Further, the observed patterns showed deviations of varying magnitude and these deviations exhibited a consistent non-linear relationship with elevation. These observations indicate that factors beyond the range constraints significantly shape species richness patterns along elevational gradients. Understanding these factors can aid in predicting and managing the impacts of ongoing environmental changes on elevational biodiversity. In conclusion, this study comprehensively assesses elevational patterns of plant species richness. We enhance our understanding of biodiversity dynamics along elevational gradients by unravelling these patterns. This knowledge is crucial for informing effective conservation strategies and promoting the preservation of plant diversity in a rapidly changing world.
+Understanding the patterns and drivers of species richness along elevational gradients is crucial for biogeographical, conservation, and ecological research. This study aims to investigate the plant species richness across three selected sites, examine the elevational patterns of species richness, compare the observed species richness with predictions of the mid-domain effect (MDE) null model, and assess the elevational pattern of residual species richness. We prepared a comprehensive database of the elevational distribution of plant species occurring at these sites by combining information from field observations and published literature. We used rigorous statistical analyses and null model simulations to elucidate species richness patterns along elevational gradients. Our study revealed significant differences in plant species richness across the three study sites. While the higher elevation site displayed a consistent decline in species richness with increasing elevation, others at lower and intermediate elevations exhibited a complex non-linear pattern. The entire elevational gradient demonstrated a non-linear unimodal pattern, with peak richness around intermediate elevations. Further, the observed patterns showed deviations of varying magnitude, and these deviations exhibited a consistent non-linear relationship with elevation. These observations indicate that factors beyond the range constraints significantly shape species richness patterns along elevational gradients. Understanding these factors can aid in predicting and managing the impacts of ongoing environmental changes on elevational biodiversity. In conclusion, the present study comprehensively assesses elevational patterns of plant species richness. Unravelling these patterns enhances our understanding of biodiversity dynamics along elevational gradients. This knowledge is crucial for informing effective conservation strategies and promoting the preservation of plant diversity in a changing environment.
 
-**Keywords:** elevational gradients, species richness, mid-domain effect, residual species richness, western Himalaya, Morni Hills, Chail WLS, Churdhar WLS
+**Keywords:** elevational gradients, species richness, mid-domain effect, residual species richness, Western Himalaya, Morni Hills, Chail WLS, Churdhar WLS
 
 # Introduction
 
 More than two million living species have been scientifically documented and many more are yet to be discovered [@COL2023]. This enormous biodiversity is unevenly distributed on the planet and mountains harbour an unusually higher number of species than any other terrestrial region [@Rahbek2019a]. Even within mountain ranges, species number shows striking variation as one moves from valleys to mountaintops [@Guo2013; @Rahbek1995]. The change in the number and diversity of species along a gradient of elevation has been referred to as the elevational patterns of species richness. This field of research explores how species richness varies as one moves up or down a mountain or hillside. The distribution of species along elevational gradients has long intrigued ecologists [@Lomolino2001] and remains a topic of active research in the fields of biogeography, conservation and ecology [@Guo2013; @Lomolino2001; @Rahbek1995]. Understanding these patterns is essential for unravelling the factors that shape biodiversity and ecological processes in different ecosystems.
 
-For a long time, it was believed that elevational gradients are mere reflections of latitudinal gradients [@Humboldt1805; @Stevens1992] and the number of species (species richness) decreases monotonically towards mountain tops [@Lomolino2001; @Rahbek1995]. However, this decreasing pattern was challenged during the late 20th century and a unimodal (hump-shaped) pattern was suggested to be more common than the monotonic decline [@Rahbek1995; @Rahbek2005]. During past decades, numerous studies investigated the elevational patterns of species richness for different taxa and diverse mountain ranges [@Guo2013; @McCain2010; @Rahbek1995]. These studies frequently documented a unimodal relationship between elevation and species richness for a range of taxa [@McCain2010] and it is widespread among many plant taxa [@Guo2013; @McCain2010; @Rahbek2005]. However, the relationship between elevation and species richness varied considerably, with some studies finding a decreasing pattern [@Bisht2022; @Trigas2013], a plateau [@Kessler2011], or even an increase [@Kessler2011; @Vetaas2002] in species richness. While many taxa showed consistent unimodal elevational patterns, some taxa, like birds [@McCain2009] and ferns [@Kessler2011], showed highly variable patterns of elevational species richness. The highly variable relationship between elevation and species richness indicates that the elevational patterns are not fully documented and understood yet. Therefore, there is still a scope to explore the elevational patterns of species richness for different taxa and mountain ranges [@Guo2013; @Lomolino2001].
+For a long time, it was believed that elevational gradients are mere reflections of latitudinal gradients [@Humboldt1805; @Stevens1992] and the number of species (species richness) decreases monotonically towards mountain tops [@Lomolino2001; @Rahbek1995]. However, this decreasing pattern was challenged during the late 20th century and a unimodal (hump-shaped) pattern was suggested to be more common than the monotonic decline [@Rahbek1995; @Rahbek2005]. During past decades, numerous studies investigated the elevational patterns of species richness for different taxa and diverse mountain ranges [@Guo2013; @McCain2010; @Rahbek1995]. These studies frequently documented a unimodal relationship between elevation and species richness for a range of taxa [@McCain2010] and it is widespread among many plant taxa [@Guo2013; @McCain2010; @Rahbek2005]. However, the relationship between elevation and species richness varied considerably, with some studies finding a decreasing pattern [@Bisht2022; @Trigas2013], a plateau [@Kessler2011], or even an increase [@Kessler2011; @Vetaas2002] in species richness. While many taxa showed consistent unimodal elevational patterns, some taxa, like birds [@McCain2009] and ferns [@Kessler2011; @Khine2017], showed highly variable patterns of elevational species richness. The highly variable relationship between elevation and species richness indicates that the elevational patterns are not fully documented and understood yet. Therefore, there is still a scope to explore the elevational patterns of species richness for different taxa and mountain ranges [@Guo2013; @Lomolino2001].
 
-While multiple biological, ecological and historical processes can shape elevational patterns of species richness [@Gaston2000; @McCain2010], simple geometric constraints can also produce a unimodal pattern of species richness [@Colwell2000; @Colwell2004]. If random species with varying distribution ranges are placed in bounded domains, more species will overlap near the centre the domains' centre than the edges. Thus, a unimodal pattern of species richness can be achieved solely due to the random placement of species ranges [@Colwell2000]. This observation of richness peaks at intermediate elevations simply due to geometric constraints has been referred to as the mid-domain effect (MDE). The prediction of MDE has been used as a null model because it operates solely due to random processes and does not consider any abiotic or biotic gradient [@Colwell2004; @Vetaas2002]. Available literature indicates variable agreement between observed species richness and the MDE predictions [@Colwell2004; @Dunn2007], suggesting the influence of factors other than range constants in shaping the elevational patterns of species richness. 
+While multiple biological, ecological and historical processes can shape elevational patterns of species richness [@Gaston2000; @McCain2010], simple geometric constraints can also produce a unimodal pattern of species richness [@Colwell2000; @Colwell2004]. If random species with varying distribution ranges are placed in bounded domains, more species will overlap near the centre the domains' centre than the edges. Thus, a unimodal pattern of species richness can be achieved solely due to the random placement of species ranges [@Colwell2000]. This observation of richness peaks at intermediate elevations simply due to geometric constraints has been referred to as the mid-domain effect (MDE). The prediction of MDE has been used as a null model because it operates solely due to random processes and does not consider any abiotic or biotic gradient [@Colwell2004; @Vetaas2002]. The MDE null model assumes that species ranges are randomly distributed within the given domains, and predicts a unimodal pattern of species richness along an elevational gradient, with peak richness occurring at the midpoint of the gradient. This pattern arises due to the geometric constraints imposed by the boundaries of the elevational range [@Colwell2004]. Thus, the MDE model assumes that species richness is solely determined by the spatial constraints of the geographic range, independent of environmental factors [@Colwell2000]. Available literature indicates variable agreement between observed species richness and the MDE predictions [@Colwell2004; @Dunn2007], suggesting the influence of factors other than range constants in shaping the elevational patterns of species richness. 
 
-Understanding the elevational patterns of species distributions is a pre-requisite for identifying high-diversity areas. It has important implications for the conservation and sustainability of fragile mountain ecosystems like the Himalayas. Also, studying elevational patterns can inform conservation strategies in the face of ongoing environmental changes, such as climate change, which are expected to profoundly affect mountain ecosystems [@Rahbek2019a; @Steinbauer2018]. While many studies explored elevational patterns of plant species richness in central and eastern Himalayas [@Bhattarai2004; @Grau2007; @Grytnes2002; @Qian2022; @Rana2019ecy; @Vetaas2002], studies in Western Himalayas remained limited [@Bisht2022; @Chawla2008; @Oommen2005]. Through our research, we aspire to contribute to the broader understanding of biogeography, macroecology and conservation in the Western Himalayas. Therefore, the present analysis focused on three protected areas, representing a large elevational gradient 300--3600 m above mean sea level in the Western Himalayas. By combining information from the literature survey and published data, we seek to contribute to the growing research on elevational patterns of plant species richness in the Western Himalayas. Specifically, the present study aims to (1) compare the plant species richness among different sites, (2) investigate the patterns of plant species richness across different elevational gradients, (3) compare the observed species richness with predictions of mid-domain effect null model across different elevational gradients, and (4) explore the elevational pattern of residual species richness (observed - predicted species richness). Our findings will contribute to enhancing our understanding of the elevational patterns of plant species richness. Further, this knowledge can inform conservation and management efforts and help us predict how plant communities will respond to future climate change.
+Understanding the elevational patterns of species distributions is a pre-requisite for identifying high-diversity areas. It has important implications for the conservation and sustainability of fragile mountain ecosystems like the Himalayas. Also, studying elevational patterns can inform conservation strategies in the face of ongoing environmental changes, such as climate change, which are expected to profoundly affect mountain ecosystems [@Rahbek2019a; @Steinbauer2018]. While many studies explored elevational patterns of plant species richness in central and eastern Himalayas [@Bhattarai2004; @Grau2007; @Grytnes2002; @Qian2022; @Rana2019ecy; @Vetaas2002], studies in Western Himalayas remained limited [@Bisht2022; @Chawla2008; @Oommen2005]. Through our research, we aspire to contribute to the broader understanding of biogeography, macroecology and conservation in the Western Himalayas. Therefore, the present analysis focused on three protected areas, representing a large elevational gradient 300--3600 m above mean sea level in the Western Himalayas. By combining information from the literature survey and published data, we seek to contribute to the growing research on elevational patterns of plant species richness in the Western Himalayas. Specifically, the present study aims to (1) compare the plant species richness among different sites, (2) investigate the patterns of plant species richness across different elevational gradients, (3) compare the observed species richness with predictions of MDE null model across different elevational gradients, and (4) explore the elevational pattern of residual species richness (observed - predicted species richness). Our findings will contribute to enhancing our understanding of the elevational patterns of plant species richness. Further, this knowledge can inform conservation and management efforts and help us predict how plant communities will respond to future climate change.
 
 # Methodology
 
 ## Study sites
 
-Western Himalayas represent the prominent mountain ranges spanning Jammu & Kashmir, Himachal Pradesh, Uttarakhand and parts of Punjab and Haryana in India. The present study focused on a combination of protected areas (wildlife sanctuaries) and their adjoining forested landscapes within the Western Himalayas. Specifically, we selected the Morni Hills (including Khol Hi-Raitan Wildlife Sanctuary), Chail Wildlife Sanctuary, and Churdhar Wildlife Sanctuary of the Western Himalayas based on their ecological significance and accessibility. The Morni Hills (300--1500 m) is located in the Panchkula district of Haryana, Chail WLS (900--2100 m) is shared by Solan and Shimla district of Himachal Pradesh, and Churdhar WLS (1600--3600 m) is shared by Sirmaur and Shimla districts of Himachal Pradesh (@fig-sites). These three sites provided a broader elevational gradient ranging from 300 m in the lower foothills to over 3600 m at the Churdhar Peak. These sites' diverse ecological zones and topographic variation offered us an ideal setting to investigate the elevational patterns of plant species richness in the Western Himalayas.
+Western Himalayas represent the prominent mountain ranges spanning Jammu & Kashmir, Himachal Pradesh, Uttarakhand and parts of Punjab and Haryana in India. The present study focused on a combination of protected areas (wildlife sanctuaries) and their adjoining forested landscapes within the Western Himalayas. Specifically, we selected the Morni Hills (including Khol Hi-Raitan Wildlife Sanctuary), Chail Wildlife Sanctuary, and Churdhar Wildlife Sanctuary of the Western Himalayas based on their ecological significance and accessibility. The Morni Hills (300--1500 m) is located in the Panchkula district of Haryana, Chail WLS (900--2100 m) is shared by Solan and Shimla district of Himachal Pradesh, and Churdhar WLS (1600--3600 m) is shared by Sirmaur and Shimla districts of Himachal Pradesh (@fig-sites). These three sites provided a broader elevational gradient ranging from 300 m in the lower foothills to over 3600 m at the Churdhar Peak.
 
-```{r eval=FALSE}
-## prepare and save the site map
-# source("site_map.R")
+```{r}
+# source("R/01_make_site_map.R")
 ```
 
-
-![Geographic location and elevation profile of Morni Hills, Chail WLS and Churdhar WLS in Western Himalayas. The Khol Hi-Raitan WLS is located in the western part of the Morni Hills. The inset map shows that the study sites are located in the southern part of Himachal Pradesh (HP) and the northern part of Haryana (HR) state.](figs/fig1.png){#fig-sites}
-
-```{r eval=FALSE}
-# wld.plot <- function(sitename, ...){
-# 
-#   read.csv("data/site_climate_wld.csv") |>
-#     filter(ID == {{sitename}}) |>
-#     select(-c(ID, Clim)) |>
-#     climatol::diagwl(cols = NULL, stname = sitename, mlab = "en",
-#                      per = "1970 to 2000", ...)
-# }
-# 
-# pdf("figs/morni_climate.pdf", width = 7, height = 5)
-# wld.plot("Morni Hills", alt = "400-1500")
-# dev.off()
-# 
-# pdf("figs/chail_climate.pdf", width = 7, height = 5)
-# wld.plot("Chail WLS", alt = "900-2200")
-# dev.off()
-# 
-# pdf("figs/chur_climate.pdf", width = 7, height = 5)
-# wld.plot("Churdhar WLS", alt = "1700-3600")
-# dev.off()
-# 
-# pdf("figs/all_climate.pdf", width = 7, height = 5)
-# wld.plot("All Sites", alt = "400-3600")
-# dev.off()
-```
+![Geographic location of Morni Hills, Chail WLS and Churdhar WLS in Western Himalayas. The Khol Hi-Raitan (KHR) WLS is located in the western part of the Morni Hills. The inset map shows the northern states of India including Ladakh (LA), Jammu & Kashmir (JK), Himachal Pradesh (HP), Punjab (PB) and Uttarakhand (UK). The study sites are located in the southern part of Himachal Pradesh (HP) and shared by the northern part of Haryana (HR) state.](figs/fig1.png){#fig-sites}
 
 The selected study areas exhibit substantial variations in climate conditions due to significant variations in elevation and topography (@fig-site-climate). Generally, the climate can be divided into three seasons, i.e., summer, monsoon, and winter. The climate varies from hot semi-arid (BSh) at the foothills to monsoonal warm-summer humid continental climate (Dwb) near Chur Peak. The Morni Hills represent the hot semi-arid (BSh) to monsoonal dry-winter humid subtropical climates (Cwa), the Chail WLS represents the monsoonal humid subtropical climate (Cwa) to monsoonal dry-winter subtropical highland climate (Cwb), and the Churdhar WLS represent the monsoonal dry-winter subtropical highland climate (Cwb) to monsoonal warm-summer humid continental climate (Dwb) near the Chur Peak [@Beck2018]. 
+
+```{r}
+# source("R/02_make_climate_diagram.R")
+```
 
 ![@Walter1967 climate diagrams for Morni Hills (top-left), Chail WLS (top-right), Churdhar WLS (bottom-left) and All Sites (bottom-right) showing the variation in average monthly temperature (shown in red) and precipitation (shown in blue) for 1970 to 2000. The text in the top-left corner of each plot represents the name of the site with its elevation range in parenthesis and the period for which climate data is represented. Similarly, the text the in top-right corner of each plot shows the mean annual temperature (&deg;C) and mean annual precipitation (mm). The x-axis denotes the months and likely frost months are filled with sky blue. The left y-axis represents the temperature in &deg;C (with red text), whereas the right y-axis depicts the precipitation in mm (with blue text). The minimum average temperature of the coldest month and maximum average temperature of the hottest month are represented on the left y-axis with black text. Above 100 mm precipitation, the scale of the right y-axis is increased from 2 mm/&deg;C to 20 mm/&deg;C and this change in scale is marked by the black horizontal line in each plot. The area filled with red dots represents the dry period where the precipitation curve falls below the temperature curve. Similarly, the area filled with blue vertical lines shows the humid period where the precipitation curve falls above the temperature curve. The area filled in solid blue indicates the wet period where the precipitation curve falls above the black horizontal line, representing the precipitation above 100 mm. The climate data was accessed from @Fick2017.](figs/fig2){#fig-site-climate}
 
 The Morni Hills (300--1500 m) harbours the tropical mixed dry deciduous forests at lower elevations and Siwalik Chir Pine forests at higher elevations. The Chail WLS (900--2100 m) comprise subtropical Pine forests at lower elevations, followed by Oak forests and moist Deodar forests at higher elevations with the occasional presence of Blue Pines. The Churdhar WLS (1600--3600) encompasses mixed coniferous forests at lower elevations, followed by Kharsu Oak forests and alpine pastures at higher elevations [@Champion1968]. Thus, these sites represent diverse plant communities, ranging from temperate forests of oak and rhododendron to alpine meadows adorned with vibrant wild-flowers. These diverse forests are home to some  Endangered (*Aconitum heterophyllum*, *Angelica glauca*, *Cypripedium himalaicum*, *Dactylorhiza hatagirea*, *Picrorhiza kurroa*, *Taxus wallichiana* and *Trillium govanianum*), Vulnerable (*Cypripedium cordigerum*, *Malaxis muscifera* and *Paris polyphylla*), and Near Threatened (*Abies spectabilis*) vascular plants according to the recent assessment [@IUCN2023]. Similarly, numerous endemic wild animals like Himalayan musk deer and Himalayan brown bears thrive in the study areas. The Chail WLS and Churdhar WLS are included in the Important Bird and Biodiversity Areas of BirdLife International [@Rahmani2016] and provide a home to some threatened birds including the Cheer Pheasant (*Catreus wallichii*), Himalayan Monal (*Lophophorus impejanus*), Indian Vulture (*Gyps indicus*), Koklass Pheasant (*Pucrasia macrolopha*), Red-headed Vulture (*Sarcogyps calvus*), and White-rumped Vulture (*Gyps bengalensis*).
 
-## Species check-list {#sec-checklist}
+## Species checklist {#sec-checklist}
 
-A comprehensive species check-list was compiled for each site by combining the information gathered from field surveys and literature surveys. We conducted 2-4 field visits of each site during 2018--2022 and recorded the identifiable plant species encountered on the treks followed by us. Unknown plants were photographed and identified in the lab with the help of literature and the herbarium (PAN) of the Panjab University, Chandigarh and the [Janaki Ammal Herbarium (RRLH)](https://iiim.res.in/herbarium/index.htm) of Indian Institute of Integrative Medicine, Jammu. On-line resources like [eFlora of India](https://efloraofindia.com/) and [Flowers of India](http://www.flowersofindia.net/) were also consulted for plant species identification [@eFI2023; @FOI2023]. Further, we conducted a systematic literature survey to identify the previously reported plant species from the selected sites. [Google Scholar](https://scholar.google.co.in/) was chosen for the identification of relevant studies for two reasons. First, it can retrieve the most obscure sources, including studies published in local publication outlets and technical reports. Second, it can search within the full-text of available articles. Considering these advantages, we searched [Google Scholar](https://scholar.google.co.in/) using "Morni", "Chail" and "Churdhar" as keywords in September 2021 and the search was again updated in August 2022. We recorded all the plant species reported from the identified accessible studies for each selected site. To prepare a complete check-list of reported plant species for all the sites, we updated our check-list by adding plant species that were collected and reported by earlier studies for Morni Hills [@Balkrishna2018a; @Balkrishna2018b; @Dhiman2020; @Dhiman2021; @Singh2014], Chail Wildlife Sanctuary [@Bhardwaj2014; @Bhardwaj2017; @Kumar2013], and Churdhar Wildlife Sanctuary [@Choudhary2007; @Choudhary2012; @Gupta1998; @Radha2019; @Subramani2014; @Thakur2021a]. 
+A comprehensive species check-list was compiled for each site by combining the information gathered from field surveys and literature surveys. We conducted 2-4 field visits of each site during 2018--2022 and recorded the identifiable plant species encountered on the treks followed by us. Considering the legal protection and conservation issues, unknown plants were photographed and identified in the lab with the help of literature and the herbarium (PAN) of the Panjab University, Chandigarh and the [Janaki Ammal Herbarium (RRLH)](https://iiim.res.in/herbarium/index.htm) of Indian Institute of Integrative Medicine, Jammu. On-line resources like [eFlora of India](https://efloraofindia.com/) and [Flowers of India](http://www.flowersofindia.net/) were also consulted for plant species identification [@eFI2023; @FOI2023]. However, identification from photographs can compromise accuracy and field survey may record only a subset of total species. Therefore, we conducted a systematic literature survey to identify the previously reported plant species from the selected sites following the earlier defined methodology [@Kumar2022]. [Google Scholar](https://scholar.google.co.in/) was chosen for the identification of relevant studies for its ability to retrieve the most obscure sources and to search within the full text of available articles. Considering these advantages, we searched [Google Scholar](https://scholar.google.co.in/) using "Morni", "Chail" and "Churdhar" as keywords in September 2021 and the search was again updated in August 2022. We recorded all the plant species reported from the identified accessible studies for each selected site. To prepare a complete check-list of reported plant species for all the sites, we updated our check-list by adding plant species that were collected and reported by earlier studies for Morni Hills [@Balkrishna2018a; @Balkrishna2018b; @Dhiman2020; @Dhiman2021; @Singh2014], Chail Wildlife Sanctuary [@Bhardwaj2014; @Bhardwaj2017; @Kumar2013], and Churdhar Wildlife Sanctuary [@Choudhary2007; @Choudhary2012; @Gupta1998; @Radha2019; @Subramani2014; @Thakur2021a]. 
 
-```{r eval=FALSE}
-# mhp <- read.csv("data/morni_plants.csv") |>
-#   select(powo_taxa, powo_author, powo_dist) |> 
-#   distinct() |> 
-#   mutate(Site = "Morni")
-# clp <- read.csv("data/chail_plants.csv") |>
-#   select(powo_taxa, powo_author, powo_dist) |> 
-#   distinct() |>
-#   mutate(Site = "Chail")
-# crp <- read.csv("data/chur_plants.csv") |>
-#   select(powo_taxa, powo_author, powo_dist) |> 
-#   distinct() |> 
-#   mutate(Site = "Churdhar")
-# 
-# bind_rows(mhp, clp, crp) |>
-#   mutate(Presence = 1) |>
-#   pivot_wider(names_from = "Site", values_from = "Presence", values_fill = 0) |>
-#   arrange(powo_taxa) |>
-#   readr::write_excel_csv("data/site_plants.csv")
+```{r}
+# source("R/03_standardise_plant_names.R")
 ```
 
 The *World Checklist of Vascular Plants (WCVP)* was followed to standardise all the botanical names and their authorities [@Govaerts2021]. It is based on the *International Plant Names Index ([IPNI](http://www.ipni.org))* and managed by the taxonomic experts at the Royal Botanic Gardens, Kew. It is considered superior to the traditionally used *The Plant List* ([TPL v1.1](http://www.theplantlist.org/)) because it is expertly reviewed and most importantly, follows the *International Code of Nomenclature* [@Turland2018]. Further, the WCVP follows the Angiosperm Phylogeny Group IV (APG IV) system of botanical classification [@APG2016]. The WCVP database is updated daily and is a taxonomic backbone for the *Plants of the World Online* [@POWO2022]. We manually screened and standardised each record of plant species using the *Plants of World Online* (<https://powo.science.kew.org/>) portal during 2021--2022 [@POWO2022]. All records of taxonomic names were updated by assigning the recently accepted names, including the spelling variants and botanical authorities [@POWO2022]. We generally accepted the infra-specific taxa (variety and subspecies) as species for the present analysis to maintain harmony among the taxa. Further, we recorded the distribution of each plant from the @POWO2022 and excluded all those taxa whose distribution was found outside of India for Morni Hills and outside of Western Himalaya for Chail WLS and Churdhar WLS. We manually corrected the known distribution of some species (*Bauhinia variegata* as Introduced to the Himalayas but Native to India). Recently, we updated the plant names and their families by matching them with a static copy of WCVP (version 10 dated 27 October 2022) using the package `rWCVP` version `r packageVersion("rWCVP")` [@R-rWCVP]. 
 
-```{r eval=FALSE}
-# library(rWCVP)
-# 
-# site_plants <- read.csv("data/site_plants.csv") |>
-#   filter(!is.na(powo_dist))
-# 
-# taxa_match <- wcvp_match_names(
-#   site_plants, name_col = "powo_taxa", author_col = "powo_author"
-# )
-# 
-# taxa_match |>
-#   left_join(
-#     rWCVPdata::wcvp_names, by = c("wcvp_accepted_id" = "plant_name_id")
-#   ) |>
-#   select(taxon_name, taxon_authors, genus, family,
-#          powo_dist, lifeform_description, climate_description,
-#          Morni, Chail, Churdhar) |>
-#   distinct() |>
-#   mutate(powo_dist = ifelse(powo_dist == "Doubtful", "Introduced", powo_dist)) |>
-#   readr::write_excel_csv("data/site_plants_wcvp.csv")
-```
-
 ## Distribution ranges
 
-The elevational distribution of each catalogued species was recorded from the recently compiled *Database of Vascular Plants of Himalaya* published on GBIF [@Rana2017; @Rana2019gbif]. This dataset comprises over 10,500 plant species compiled from published floras for the Himalayan region [@Rana2017; @Rana2019gbif]. It included over 3,300 plant species from Himachal Pradesh with elevational distribution for about 3,000 species from the published floras [@Chowdhery1984; @Collett1902; @Duthie1903]. We accessed this dataset on 6 August 2022 through [GBIF](https://www.gbif.org/) using the package `rgbif` version `r packageVersion("rgbif")` [@R-rgbif]. The plant names provided by the authors of this dataset were standardised by matching with a static copy of WCVP (version 10 dated 27 October 2022) using the package `rWCVP` version `r packageVersion("rWCVP")` [@R-rWCVP]. We filtered the elevational distribution of plants in Himachal Pradesh and then joined these elevational distributions to our plant check-list. This procedure provided elevational distribution for more than 1,000 plants. Similarly, elevational data for about ten species was extracted from another published study [@Rana2019ecs]. We excluded the remaining species (n = 228) whose elevational data was either unavailable or uncertain. Next, we manually screened the elevational data for each species. In the case of duplicates, we considered the maximum value for the upper limit and the minimum value for the lower limit [@Rana2019ecs]. Further, we preferred the data from Himachal Pradesh over the neighbouring states or the entire Himalayas because our sites broadly fall under this Indian state. However, some species had their elevational distribution extending beyond our sites' elevational range (300--3,600 m). Therefore, we adjusted the minimum lower limit of distribution to the minimum elevation of the study site, the minimum upper limit of distribution to the minimum elevation of the study site plus 100 m and the maximum upper limit of distribution to the maximum elevation of the study site rounded to nearest hundred. Thus, the elevational distribution limits represented each 'soft boundaries' for each site [@Colwell1994].
+The elevational distribution of each catalogued species was recorded from the recently compiled *Database of Vascular Plants of Himalaya* published on GBIF [@Rana2017; @Rana2019gbif]. This dataset comprises over 10,500 plant species compiled from published floras for the Himalayan region [@Rana2017; @Rana2019gbif]. It included over 3,300 plant species from Himachal Pradesh with elevational distribution for about 3,000 species from the published floras [@Chowdhery1984; @Collett1902; @Duthie1903]. We accessed this dataset on 6 August 2022 through [GBIF](https://www.gbif.org/) using the package `rgbif` version `r packageVersion("rgbif")` [@R-rgbif]. The plant names provided by the authors of this dataset were standardised by matching with a static copy of WCVP (version 10 dated 27 October 2022) using the package `rWCVP` [@R-rWCVP]. We filtered the elevational distribution of plants in Himachal Pradesh and then joined these elevational distributions to our plant check-list. This procedure provided elevational distribution for more than 1,000 plants. Similarly, elevational data for about ten species was extracted from another published study [@Rana2019ecs]. We excluded the remaining species (n = 228) whose elevational data was either unavailable or uncertain. Next, we manually screened the elevational data for each species. In the case of duplicates, we considered the maximum value for the upper limit and the minimum value for the lower limit [@Rana2019ecs]. Further, we preferred the data from Himachal Pradesh over the neighbouring states or the entire Himalayas because our sites broadly fall under this Indian state. However, some species had their elevational distribution extending beyond our sites' elevational range (300--3,600 m). Therefore, we adjusted the lower limit (LL) and upper limit (UL) of elevational distribution to match the elevational gradient of each site with a buffer of 100 m elevation. For instance, the lower limit (LL) was adjusted to range from 900 to 2000 metres and the upper limit (UL) was adjusted to range from 1000 to 2100 metres for Chail WLS with elevation ranging from 900 to 2100 metres. Thus, the elevational distribution limits represented each 'soft boundaries' for each site [@Colwell1994].
 
-```{r eval=FALSE}
-# library(rgbif)
-# library(rWCVP)
-# 
-# # ## download dataset from gbif using the key
-# # rana_gbif <- occ_download_get(
-# #   key = "0417447-210914110416597", path = "data/", overwrite = TRUE
-# # ) |>
-# #   occ_download_import("data/", na.strings = c("", NA))
-# 
-# # OR read downloaded file
-# rana_gbif_hp <- as.download("data/0417447-210914110416597.zip") |>
-#   occ_download_import(na.strings = c("", NA)) |>
-#   ## select columns that are further used
-#   select(stateProvince, verbatimScientificName,
-#          elevationAccuracy, elevation, iucnRedListCategory) |>
-#   filter(stateProvince == "Himachal Pradesh")
-# 
-# ## match names from Rana2017 to WCVP
-# rana_match <- rana_gbif_hp |>
-#   separate(verbatimScientificName,
-#            into = c("rana_genus", "rana_species", "rana_authors"),
-#             sep = " ", extra = "merge") |>
-#   unite(col = "rana_taxon", rana_genus, rana_species, sep = " ") |>
-#   distinct(rana_taxon, .keep_all = TRUE) |>
-#   ## this step takes time
-#   wcvp_match_names(name_col = "rana_taxon", author_col = "rana_authors")
-# 
-# ## join accepted names and other details from WCVP
-# rana_match |>
-#   left_join(
-#     rWCVPdata::wcvp_names, by = c("wcvp_accepted_id" = "plant_name_id")
-#   ) |>
-#   select(
-#     rana_taxon, rana_authors, taxon_name, taxon_authors,
-#     elevationAccuracy, elevation, iucnRedListCategory
-#   ) |>
-#   unite("verbatimScientificName", rana_taxon, rana_authors, sep = " ") |>
-#   rename("LL" = elevationAccuracy, "UL" = elevation,
-#          "IUCN" = iucnRedListCategory) |>
-#   readr::write_excel_csv("data/rana_elev_rang.csv")
-# 
-# ## join elevation range with species check-list
-# site_spec_elev <- read.csv("data/site_plants_wcvp.csv") |>
-#   select("taxon_name", "taxon_authors") |>
-#   left_join(read.csv("data/rana_elev_rang.csv"))
-# 
-# ## joined elevational range from GBIF HP
-# site_spec_elev_hp <- site_spec_elev |> filter(!is.na(UL))
-# 
-# ## data from rana 2019
-# rana2019 <- read.csv("data/ecs22945-sup-0004-datas1.csv") |>
-#    mutate(
-#      Species = str_replace(Species, pattern = "_", replacement = " ")
-#    ) |>
-#   select(Species, HPLL, HPUL)
-# 
-# ## elevational range not available
-# site_spec_elev_nhp <- site_spec_elev |> 
-#   filter(is.na(LL) & is.na(UL)) |>
-#   select(taxon_name, taxon_authors) |>
-#   left_join(
-#     filter(rana2019, !is.na(HPLL) & !is.na(HPUL)),
-#     by = join_by("taxon_name" == "Species")
-#   ) |>
-#   filter(!is.na(HPLL) & !is.na(HPUL)) |>
-#   rename("LL" = HPLL, "UL" = HPUL)
-# 
-# ## merge two datasets and write to local disk
-# bind_rows(site_spec_elev_hp, site_spec_elev_nhp) |>
-#   distinct(taxon_name, LL, UL, .keep_all = TRUE) |>
-#   group_by(taxon_name, taxon_authors) |>
-#   summarise(LL = min(LL), UL = max(UL)) |>
-#   mutate(LL = ifelse(test = LL < 300, yes = 300, no = LL),
-#          UL = ifelse(test = UL < 400, yes = 400, no = UL),
-#          UL = ifelse(test = UL > 3600, yes = 3600, no = UL)) |>
-#   write.csv("data/site_spec_elev.csv", row.names = F)
+```{r}
+# source("R/04_get_elevation_ranges.R")
 ```
 
 ## Species richness
 
 Firstly, we re-sampled the elevation to 30 arc-sec (~1 km) raster with bilinear interpolation using the `resample()` function from the `terra` package version `r packageVersion("terra")` [@R-terra]. This re-sampling updated the elevational extents of Morni Hills (300--1300 m), Chail WLS (900--2100 m), Churdhar WLS (1600--3400 m) and All Sites (300--3400 m). We divided each elevational gradient into 100-m elevational bands for each site to estimate species richness at different elevations. Such 100-m elevational bands have been previously used to study the elevational patterns of species richness in plants [@Li2022; @Qian2022; @Rana2019ecs]. Thus, the species richness was estimated in 10 bands for Morni Hills, 12 bands for Chail WLS, 18 bands for Churdhar WLS, and 31 bands for All Sites combined. Each elevational band is represented by the upper elevational limit in both text and figures. We used the range interpolation approach to estimate the species richness for each elevational band, assuming that each species can be found everywhere between its elevational range [@Grytnes2002]. The range interpolation method has been widely used to study the elevational patterns of plant species richness [@Hu2016; @Manish2017; @Rana2019ecs]. Although this approach can introduce bias in estimating species richness [@Hu2016], it is commonly applied for compensating the sampling problems and overall methodological consistency. Therefore, we assigned each species to all elevational bands occurring wholly or partly within its known elevational range [@Grytnes2002; @Qian2022; @Rana2019ecs]. Then, the species richness was estimated as the total number of species present in each 100-m elevational band. Since this species richness corresponds to the whole elevational band, it represents the $\gamma$-diversity for each elevational band [@Lomolino2001]. 
 
-```{r eval=FALSE}
-# ## adjusted richness for available explanatory variables
-# esr_morni <- read.csv("data/site_plants_wcvp.csv") |>
-#   left_join(read.csv("data/site_spec_elev.csv"),
-#             by = join_by(taxon_name, taxon_authors)) |>
-#   filter(!is.na(UL) & Morni == 1) |>
-#   mutate(UL = ifelse(test = UL > 1300, yes = 1300, no = UL)) |>
-#   calc.richness(LL = "LL", UL = "UL", 300, 1300) |>
-#   mutate(site = "Morni")
-# 
-# esr_chail <- read.csv("data/site_plants_wcvp.csv") |>
-#   left_join(read.csv("data/site_spec_elev.csv"),
-#             by = join_by(taxon_name, taxon_authors)) |>
-#   filter(!is.na(UL) & Chail == 1) |>
-#   mutate(LL = ifelse(test = LL < 900, yes = 900, no = LL),
-#          LL = ifelse(test = LL > 2000, yes = 2000, no = LL),
-#          UL = ifelse(test = UL < 1000, yes = 1000, no = UL),
-#          UL = ifelse(test = UL > 2100, yes = 2100, no = UL)) |>
-#   calc.richness(LL = "LL", UL = "UL", 900, 2100) |>
-#   mutate(site = "Chail")
-# 
-# esr_churdhar <- read.csv("data/site_plants_wcvp.csv") |>
-#   left_join(read.csv("data/site_spec_elev.csv"),
-#             by = join_by(taxon_name, taxon_authors)) |>
-#   filter(!is.na(UL) & Churdhar == 1) |>
-#   mutate(LL = ifelse(test = LL < 1600, yes = 1600, no = LL),
-#          UL = ifelse(test = UL < 1700, yes = 1700, no = UL)) |>
-#   calc.richness(LL = "LL", UL = "UL", 1600, 3400) |>
-#   mutate(site = "Churdhar")
-# 
-# esr_all <- read.csv("data/site_plants_wcvp.csv") |>
-#   left_join(read.csv("data/site_spec_elev.csv"),
-#             by = join_by(taxon_name, taxon_authors)) |>
-#   filter(!is.na(UL)) |>
-#   distinct(taxon_name, .keep_all = T) |>
-#   calc.richness(LL = "LL", UL = "UL", 300, 3400) |>
-#   mutate(site = "All")
-# 
-# bind_rows(esr_morni, esr_chail, esr_churdhar, esr_all) |>
-#   write.csv("data/band_richness.csv", row.names = FALSE)
+```{r}
+# source("R/05_calculate_species_richness.R")
 ```
 
 
@@ -316,16 +138,16 @@ Firstly, we re-sampled the elevation to 30 arc-sec (~1 km) raster with bilinear 
 
 ```{r}
 # ## Shapiro-Wilk test for normality
-# read.csv("data/band_richness.csv") |>
+# read.csv("output/band_richness.csv") |>
 #   group_by(site) |>
-#   shapiro_test(Richness)
+#   shapiro_test(richness)
 # 
 # ## Levene's test for homogeneity of variance
-# read.csv("data/band_richness.csv") |>
-#   levene_test(Richness ~ as.factor(site))
+# read.csv("output/band_richness.csv") |>
+#   levene_test(richness ~ as.factor(site))
 ```
 
-Firstly, we aimed to compare species richness per 100-m elevational band across selected sites at different elevations. Since the number of 100-m elevational bands varied in our selected sites, we suspected substantial deviations from the assumptions of the parametric test. Therefore, we assessed the assumptions of normality and homogeneity of variance for species richness before comparing mean species richness among selected sites. Levene's test indicated species richness had significantly different variances among the selected sites (*F~3,67~* = 11.33, *p* < 0.001). Since our data did not meet the assumption of homogeneity of variances, we used Welch's one-way analysis of variance [@Welch1951] to compare the mean species richness per 100-m elevational band across the sites. Next, we conducted the Games-Howell post hoc test [@Games1976] to assess the differences between all unique pairwise comparisons. The Games-Howell post hoc test has been recommended for pairwise comparison of samples with unequal sample sizes and variances [@Ruxton2008]. We implemented these statistical tests in `R` statistical environment version `r packageVersion("stats")` [@R-base] using the `R` package `rstatix` version `r packageVersion("rstatix")` [@R-rstatix].
+Firstly, we aimed to compare species richness per 100-m elevational band across selected sites at different elevations. Since the number of 100-m elevational bands varied in our selected sites, we suspected substantial deviations from the assumptions of the parametric test. Therefore, we assessed the assumptions of normality and homogeneity of variance for species richness before comparing mean species richness among selected sites. Levene's test indicated species richness had significantly different variances among the selected sites (*F~3,67~* = 11.33, *p* < 0.001). Since our data did not meet the assumption of homogeneity of variances, we used Welch's one-way analysis of variance [@Welch1951] to compare the mean species richness per 100-m elevational band across the sites. Next, we conducted the Games-Howell post hoc test [@Games1976] to assess the differences between all unique pairwise comparisons. The Games-Howell post hoc test has been recommended for pairwise comparison of samples with unequal sample sizes and variances [@Ruxton2008]. We implemented these statistical tests in `R` statistical environment [@R-base] using the `R` package `rstatix` version `r packageVersion("rstatix")` [@R-rstatix].
 
 Secondly, we aimed to explore the elevational patterns of plant species richness in the Western Himalayas. A generalised linear model (GLM) was used to examine the relationship between plant species richness as the response variable and elevation as the predictor variable. The GLM framework accommodates data with non-normal error distributions, models non-linear relationships, incorporates multiple predictors, and provides statistical inference [@Hilbe2014]. Our response variable, plant species richness, was defined as the count of unique plant species observed within predefined elevation bands. We chose to use a Poisson distribution within the GLM due to the discrete and non-negative nature of our response variable. The Poisson distribution is commonly used when modelling count data, as it accounts for the inherent heterogeneity and overdispersion observed in such discrete data [@Hilbe2014]. Therefore, we used the GLM framework with a Poisson distribution and logarithmic-link function, which ensures that the fitted values are always non-negative. The GLMs were implemented using the `glm()` function from the `stats` package in `R` programming environment version `r packageVersion("stats")` [@R-base]. 
 
@@ -359,41 +181,51 @@ $$ {#eq-aicc}
 where, $k$ is the number of parameters to be estimated by the model and $n$ is the total number of response observations in the model. The model with the lowest AICc value was considered best and models with a difference of two AICc units were considered equally competitive [@Burnham2002]. Since our models are nested, we statistically compared the larger (more predictors) models with smaller (less predictors) models using a Deviance-based Chi-squared test, also known as the likelihood ratio test (@tbl-model-selection). A significant *p*-value (i.e., *p* < 0.05) suggests substantial improvement in model fit when additional predictors were included, i.e., the larger model is better than the smaller model.
 
 ```{r}
-bmod_morni <- read.csv("data/band_richness.csv") |> 
-  mutate(Elev = Elevation/1e3) |> 
+bmod_morni <- read.csv("output/band_richness.csv") |> 
+  mutate(elev = elevation/1e3) |> 
   filter(site == "Morni") |>
   with(glm(
-    Richness ~ Elev + I(Elev^2) + I(Elev^3), family = "poisson"
+    richness ~ elev + I(elev^2) + I(elev^3), family = "poisson"
   ))
 
-bmod_chail <- read.csv("data/band_richness.csv") |> 
-  mutate(Elev = Elevation/1e3) |> 
+bmod_chail <- read.csv("output/band_richness.csv") |> 
+  mutate(elev = elevation/1e3) |> 
   filter(site == "Chail") |>
   with(glm(
-    Richness ~ Elev + I(Elev^2), family = "poisson"
+    richness ~ elev + I(elev^2), family = "poisson"
   ))
 
-bmod_chur <- read.csv("data/band_richness.csv") |> 
-  mutate(Elev = Elevation/1e3) |> 
+bmod_chur <- read.csv("output/band_richness.csv") |> 
+  mutate(elev = elevation/1e3) |> 
   filter(site == "Churdhar") |>
   with(glm(
-    Richness ~ Elev + I(Elev^2), family = "poisson"
+    richness ~ elev + I(elev^2), family = "poisson"
   ))
 
-bmod_all <- read.csv("data/band_richness.csv") |> 
-  mutate(Elev = Elevation/1e3) |> 
+bmod_all <- read.csv("output/band_richness.csv") |> 
+  mutate(elev = elevation/1e3) |> 
   filter(site == "All") |>
   with(glm(
-    Richness ~ Elev + I(Elev^2) + I(Elev^3) + I(Elev^4), 
+    richness ~ elev + I(elev^2) + I(elev^3) + I(elev^4), 
     family = "poisson"
   ))
 ```
 
 Once the models were selected, a thorough evaluation of their performance was conducted to ensure the validity of the findings. Model evaluation involves assessing the assumptions of the selected models and diagnosing potential issues. We used simulated residuals (n = 1000) to visually determine model fit by plotting residuals against the model predictions [@Dunn1996]. Then, the model was validated by analysing the dispersion and distributional assumptions of the fitted model. The simulated residuals from the defined distribution were tested against the residuals of the fitted model. Specifically, the uniformity was tested using the Kolmogorov-Smirnov (KS) test, dispersion was tested using the simulation-based dispersion test and outliers were tested by generating a simulation-based expectation for the outliers using the bootstrapping. If the dispersion test indicated significant over-/under-dispersion, we assessed the variance of observed raw residuals against the variance of simulated residuals. The deviations in the model residuals were visually considered by plotting the simulation-based residuals against the model predictions. This residual analysis and model validation was implemented using the `simulateResiduals()` function from the `DHARMa` package version `r packageVersion("DHARMa")` [@R-DHARMa]. Additionally, we performed the Deviance-based Chi-squared goodness-of-fit test to assess the overall goodness-of-fit of the selected model. A non-significant *p*-value indicates that there is no significant difference between the predictions of the model and observed data, i.e., the data is adequately fitted to the model. After assessing the goodness-of-fit for the selected models, we used Wald's test to evaluate the significance of estimated regression coefficients.
 
-Our third aim was to compare the observed species richness with predictions of a null model. A **null model** predicts the observed patterns solely due to the operation of random processes [@Gotelli2009]. The geometric constraint hypothesis or the mid-domain effect is a commonly used null model to evaluate species richness patterns [@Colwell1994; @Grytnes2002]. This hypothesis predicts that the species richness patterns emerge from a random distribution of species ranges. The *elevational range* of a species is defined as the difference between the highest and lowest elevation of its geographical distribution and the *elevational midpoint* as the mean of these two limits [@Stevens1992]. We randomly generated elevational ranges equal to the number of species in each site. The elevational ranges were generated by defining the geometric constraints of boundaries, i.e., the lower and upper elevational limits corresponding to each study site [Box 2 in @Colwell2000]. These elevational limits were re-arranged so that the lower value should represent the lower limit, whereas the higher value should represent the upper limit of the elevational range. Then, the species richness was calculated by assuming that the species is continuously present within its elevational range. Next, we calculated species richness in each 100-m elevational band starting from minimum elevation to maximum elevation. This process was repeated 10,000 times to estimate the minimum, maximum, mean species richness and associated standard deviation for each elevational band. The mean species richness (S~null~) predicted by this null model was compared with the observed species richness (S). We used linear regression analysis to compare the strength of the association between observed species richness and predictions of null models. If the observed species richness is well agreed with the predictions of the null model, then the slope value should be close to one. 
+Our third aim was to compare the observed species richness with predictions of a null model. A **null model** predicts the observed patterns solely due to the operation of random processes [@Gotelli2009]. The geometric constraint hypothesis or the mid-domain effect (MDE) is a commonly used null model to evaluate species richness patterns [@Colwell1994; @Grytnes2002]. This hypothesis predicts that the species richness patterns emerge from a random distribution of species ranges. The *elevational range* of a species is defined as the difference between the highest and lowest elevation of its geographical distribution and the *elevational midpoint* as the mean of these two limits [@Stevens1992]. We randomly generated elevational ranges equal to the number of species in each site. The elevational ranges were generated by defining the geometric constraints of boundaries, i.e., the lower and upper elevational limits corresponding to each study site [Box 2 in @Colwell2000]. These elevational limits were re-arranged so that the lower value should represent the lower limit, whereas the higher value should represent the upper limit of the elevational range. Then, the species richness was calculated by assuming that the species is continuously present within its elevational range. Next, we calculated species richness in each 100-m elevational band starting from minimum elevation to maximum elevation. This process was repeated 10,000 times to estimate the minimum, maximum, mean species richness and associated standard deviation for each elevational band. The mean species richness (S~null~) predicted by this null model was compared with the observed species richness (S). We used linear regression analysis to compare the strength of the association between observed species richness and predictions of null models. If the observed species richness is well agreed with the predictions of the null model, then the slope value should be close to one.
 
-Finally, we estimated the residual species richness (S~res~), representing the difference between observed (S) and predicted species richness (S~null~) for each 100-m elevational band. The residual species richness (S~res~) was calculated by subtracting the predicted species richness (generated by the mid-domain effect null model) from the observed species richness for each 100-m elevational band. Positive residuals indicated higher species richness than expected, while negative residuals indicated lower species richness than expected. We initially assessed the relationship between elevation and residual species richness using a scatter plot and calculated Pearson’s correlation coefficient to explore the strength and direction of the association (@fig-sres-linear). We included quadratic and cubic elevation terms as predictors to account for non-linear relationship between residual species richness and elevation. Then, we used polynomial linear regression to analyse the elevational pattern of residual species richness (S~res~). The goodness-of-fit for the polynomial models was assessed using the adjusted coefficient of determination (R^2^~adj~), with higher values indicating better model fit. The significance of estimated regression coefficients was determined using the t-test and p-values less than 0.05 were considered significant. All analyses were implemented in `R` statistical environment version `r packageVersion("stats")` [@R-base] and the package `tidyverse` version `r packageVersion("tidyverse")` was used for general data wrangling and visualisation [@R-tidyverse]. 
+```{r}
+# source("R/06_get_mde_predictions.R")
+```
+
+Fourth, we estimated the residual species richness (S~res~), representing the difference between observed (S) and predicted species richness (S~null~) for each 100-m elevational band. The residual species richness (S~res~) was calculated by subtracting the predicted species richness (generated by the MDE null model) from the observed species richness for each 100-m elevational band. Positive residuals indicated higher species richness than expected, while negative residuals indicated lower species richness than expected. We initially assessed the relationship between elevation and residual species richness using a scatter plot and calculated Pearson’s correlation coefficient to explore the strength and direction of the association (@fig-sres-linear). We included quadratic and cubic elevation terms as predictors to account for non-linear relationship between residual species richness and elevation. Then, we used polynomial linear regression to analyse the elevational pattern of residual species richness (S~res~). The goodness-of-fit for the polynomial models was assessed using the adjusted coefficient of determination (R^2^~adj~), with higher values indicating better model fit. The significance of estimated regression coefficients was determined using the t-test and p-values less than 0.05 were considered significant. 
+
+Finally, we tested the effect of the total number of observed species (N~obs~) on elevational patterns of plant species richness. We re-calculated the species richness for each 100-m elevational band at different levels of the total number of species by randomly removing and adding 50 to 200 species to the total number of observed species for each site. To test the effect of further additions to the total observed species, we recalculated species richness by adding randomly sampled elevational ranges for 50, 100, 150, and 200 virtual species. Similarly, we tested this effect in the reverse direction by randomly removing 50, 100, 150, and 200 observed species. Thus, we estimated species richness at nine levels (-200, -150, -100, -50, 0, 50, 100, 150, and 200) of total number of observed species for each site. Further, we calculated the predicted species richness from the MDE null model (S~null~) for these nine levels of the total species for each site. Then, we used linear regression analysis to measure the relationship between observed species richness and predicted species richness for different levels of total number of species. Specifically, we estimated the slope value by regressing the observed species richness (S) against the predictions of the null model (S~null~) using the general linear model for different levels of total species for each site. Next, we used Pearson's correlation coefficient (*r*) to test how the total number of species (N~obs~) affects the relationship between observed species richness (S) and predictions of the MDE null model (S~null~). All analyses were implemented in `R` statistical environment version `r packageVersion("stats")` [@R-base] and the package `tidyverse` version `r packageVersion("tidyverse")` was used for general data wrangling and visualisation [@R-tidyverse]. 
+
+```{r}
+# source("R/07_test_species_sensitivity.R")
+```
 
 # Results
 
@@ -406,7 +238,7 @@ Our initial check-list included over 2500 records of plant species across the se
 #| tbl-cap: Summary of recorded vascular plant taxa from Morni Hills, Chail WLS and Churdhar WLS. The table includes the counts of unique taxa observed in each site, and the total number of unique taxa across all three sites. The taxa are categorised based on their taxonomic levels (species, genus, and family) and nativity (Introduced and Native).
 
 floral.summary <- function(sitename){
-  df <- read.csv("data/site_plants_wcvp.csv") |> 
+  df <- read.csv("output/site_plants_wcvp.csv") |> 
   pivot_longer(cols = c("Morni", "Chail", "Churdhar"), 
                names_to = "Site", values_to = "Vals") |>
   filter(Vals == 1) |> select(-Vals) |>
@@ -419,7 +251,7 @@ floral.summary <- function(sitename){
         )
 }
 
-df2 <- read.csv("data/site_plants_wcvp.csv") |>
+df2 <- read.csv("output/site_plants_wcvp.csv") |>
   mutate(powo_dist = ifelse(
     taxon_name %in% c("Bauhinia variegata", "Impatiens balsamina", 
                       "Lysimachia arvensis"),
@@ -445,12 +277,12 @@ bind_cols(
 rm(df2, total_summary)
 ```
 
-A total of 696 species belonging to 471 genera and 109 families were recorded from Morni Hills. Among these 696 species, 576 species were Native and 120 species were Introduced. In Chail WLS, 438 species belonging to 322 genera and 109 families were recorded. Among these 438 species, 393 species were Native and 45 species were Introduced. The Churdhar WLS represented 616 species belonging to 346 genera and 99 families. Out of 616 species, this region had 600 Native and 16 Introduced species. Among all the selected sites, Morni Hills recorded the maximum number of species, followed by Churdhar WLS and Chail WLS (@tbl-flora-summary). Similarly, the number of Introduced species was maximum in Morni Hills, whereas it was minimum in Churdhar WLS.
+A total of 696 species belonging to 471 genera and 109 families were recorded from Morni Hills. Among these 696 species, 576 species were Native and 120 species were Introduced. In Chail WLS, 438 species belonging to 322 genera and 106 families were recorded. Among these 438 species, 393 species were Native and 45 species were Introduced. The Churdhar WLS represented 616 species belonging to 346 genera and 99 families. Out of 616 species, this region had 600 Native and 16 Introduced species. Among all the selected sites, Morni Hills recorded the maximum number of species, followed by Churdhar WLS and Chail WLS (@tbl-flora-summary). Similarly, the number of Introduced species was maximum in Morni Hills, whereas it was minimum in Churdhar WLS.
 
 ```{r eval=FALSE, fig.width=7, fig.height=3}
 library(ggVennDiagram)
 
-flora <- read.csv("data/site_plants_wcvp.csv")
+flora <- read.csv("output/site_plants_wcvp.csv")
 
 xspecies <- list(
   Morni    = filter(flora,    Morni == 1)$taxon_name,
@@ -472,6 +304,8 @@ xfamily <- list(
 
 ## function for customised Venn
 myvenn <- function(x){
+  
+  
 
   df_circ <- venn_setedge(x) |> sf::st_cast("POLYGON")
   
@@ -487,7 +321,7 @@ myvenn <- function(x){
     geom_sf_label(
       data = venn_region(x), 
       aes(label = paste0(round(count/sum(count)*100, 1), "%")), 
-      aes(label = count), 
+      # aes(label = count), 
       size = 3
     ) +
     geom_text(data = df_site, aes(x, y, label = site, colour = site),
@@ -504,24 +338,25 @@ cowplot::plot_grid(
   nrow = 1, labels = c("a) Species", "b) Genus", "c) Family"),
   label_x = -0.125, label_size = 12
 )
+
 # ggsave(filename = "figs/fig3.pdf", width = 7, height = 3, units = "in")
-# ggsave(filename = "figs/fig3.svg", width = 7, height = 3, units = "in")
+# ggsave(filename = "figs/fig3.png", width = 7, height = 3, units = "in", dpi = 600)
 ```
 
 ![Venn diagram illustrating the per cent distribution of (a) species (n = 1385), (b) genera (n = 748), and (c) families (n = 145) across the selected sites. Each circle represents a specific site and the overlapping areas represent shared taxa, while the non-overlapping regions indicate unique taxa for each site. The diagram provides insights into the shared and site-specific taxa composition across the study sites.](figs/fig3){#fig-venn}
 
-Out of 1385 species, 50 species were recorded from all the sites. Morni Hills, Chail WLS and Churdhar WLS had 515, 153, and 402 unique species, respectively. The Chail WLS and Churdhar WLS shared the highest number of plant species (n = 134), whereas minimum species (n = 30) were shared by Morni Hills and Churdhar WLS (@fig-venn a). Similarly, about 97 genera were common to All Sites and Morni Hills comprised the greatest number of unique plant genera (n = 263) followed by Churdhar WLS (n = 138), whereas Chail WLS had the lowest number of unique genera (n = 53). The Chail WLS shared the highest number of genera (n = 86) with Morni Hills and Churdhar WLS, whereas only 25 were shared by the Morni Hills and Churdhar WLS (@fig-venn b). Taxa from 65 families were common to all the sites and Morni Hills represent the highest number of unique families. Morni Hills, Chail WLS and Churdhar WLS represented taxa from 24, 7, and 10 families, respectively. Generally, there was high similarity in taxa for Chail WLS and Churdhar WLS, whereas Morni Hills and Churdhar WLS exhibited unique taxonomic compositions of plants. Among the families of the recorded species (@tbl-dom-families), Fabaceae was the most dominant with 133 species across All Sites, followed by Asteraceae (n = 109), Poaceae (n = 93), Lamiaceae (n = 58) and Rosaceae (n = 43). Family Fabaceae (n = 105) was dominant in Morni Hills, whereas family Asteraceae was dominant in Chail WLS (n = 41) and Churdhar WLS (n = 47).
+Out of 1385 species, 50 species were recorded from all the sites. Morni Hills, Chail WLS and Churdhar WLS had 515, 153, and 402 unique species, respectively. The Chail WLS and Churdhar WLS shared the highest number of plant species (n = 134), whereas minimum species (n = 30) were shared by Morni Hills and Churdhar WLS (@fig-venn a). Similarly, about 97 genera were common to All Sites and Morni Hills comprised the greatest number of unique plant genera (n = 263) followed by Churdhar WLS (n = 138), whereas Chail WLS had the lowest number of unique genera (n = 53). The Chail WLS shared the highest number of genera (n = 86) with Morni Hills and Churdhar WLS, whereas only 25 were shared by the Morni Hills and Churdhar WLS (@fig-venn b). Taxa from 65 families were common to all the sites and Morni Hills represent the highest number of unique families. Morni Hills, Chail WLS and Churdhar WLS represented taxa from 24, 7, and 10 families, respectively (@fig-venn c). Generally, there was high similarity in taxa for Chail WLS and Churdhar WLS, whereas Morni Hills and Churdhar WLS exhibited unique taxonomic compositions of plants. Among the families of the recorded species (@tbl-dom-families), Fabaceae was the most dominant with 133 species across All Sites, followed by Asteraceae (n = 109), Poaceae (n = 93), Lamiaceae (n = 58) and Rosaceae (n = 43). Family Fabaceae (n = 105) was dominant in Morni Hills, whereas family Asteraceae was dominant in Chail WLS (n = 41) and Churdhar WLS (n = 47).
 
 ```{r eval=FALSE}
 ## mean and SE for each site
-read.csv("data/band_richness.csv") |>
+read.csv("output/band_richness.csv") |>
   group_by(site) |>
-  rstatix::get_summary_stats(Richness)
+  rstatix::get_summary_stats(richness, type = "mean_se")
 
 ## Welch's ANOVA
-read.csv("data/band_richness.csv") |>
+read.csv("output/band_richness.csv") |>
   filter(site != "All") |>
-  welch_anova_test(Richness ~ site)
+  welch_anova_test(richness ~ site)
 
 ## adjusted omega squared
 est.omega <- function(DFn, statistic, n){
@@ -530,29 +365,29 @@ est.omega <- function(DFn, statistic, n){
 est.omega(2, 9.9, 40)
 
 ## Games Howell post hoc test
-read.csv("data/band_richness.csv") |>
+read.csv("output/band_richness.csv") |>
   filter(site != "All") |>
-  games_howell_test(Richness ~ site) |>
+  games_howell_test(richness ~ site) |>
   mutate(p.adj = round(p.adj, 3))
 ```
 
-Further, we observed significant differences in plant species richness per 100-m elevational band among the study sites along the elevational gradients (@fig-sr-comp). The average species richness per 100-m elevational band was highest for Churdhar WLS (mean = 313.12, SE = 29.58), followed by Morni Hills (mean = 163.30, SE = 17.70) and it was lowest for Chail WLS (mean = 180.92, SE = 8.69). When the data were combined from all sites, the average species richness rose to 362.84 &pm; 28.77 per 100-m elevational band. Post-hoc tests revealed that the species richness per elevational band was significantly higher in Churdhar WLS as compared to Morni Hills (mean difference = 149.82, *p* < 0.001) and Chail WLS (mean difference = 132.19, *p* < 0.001). However, the mean species richness was not significantly differed between Morni Hills and Chail WLS (mean difference = 17.62, *p* = 0.653). The estimated omega squared ($\omega^2$ = 0.31) indicated that approximately 31% of the total variation in average species richness is attributable to differences among the three study sites.
+Further, the Welch's one way ANOVA indicated significant differences (*F~2, 20.3~* = 9.9, *p* < 0.001) in plant species richness per 100-m elevational band due to the study sites along the elevational gradients (@fig-sr-comp). The average species richness per 100-m elevational band was highest for Churdhar WLS (mean = 313.12, SE = 29.58), followed by Morni Hills (mean = 180.92, SE = 8.69) and it was lowest for Chail WLS (mean = 163.30, SE = 17.70). When the data were combined from all sites, the average species richness rose to 362.84 &pm; 28.77 per 100-m elevational band. Post-hoc tests revealed that the species richness per elevational band was significantly higher in Churdhar WLS as compared to Morni Hills (mean difference = 149.82, *p* < 0.001) and Chail WLS (mean difference = 132.19, *p* < 0.001). However, the mean species richness was not significantly differed between Morni Hills and Chail WLS (mean difference = 17.62, *p* = 0.653). The estimated omega squared ($\omega^2$ = 0.31) indicated that approximately 31% of the total variation in average species richness is attributable to differences among the three study sites.
 
 ```{r}
 #| label: fig-sr-comp
 #| fig-cap: Comparison of species richness per 100-m elevational band among selected study sites. Welch's one-way analysis of variance (ANOVA) was used to test the differences among the selected sites. The Games-Howell *post hoc* test was used to test the significance of the difference between selected sites and the sites with different lower case letters are significantly different from each other (*p* < 0.05).
 
-ght <- read.csv("data/band_richness.csv") |>
+ght <- read.csv("output/band_richness.csv") |>
   filter(site != "All") |>
   mutate(site = factor(site, c("Morni", "Chail", "Churdhar"))) |>
   group_by(site) |>
-  summarise(max_rich = max(Richness)) |>
+  summarise(max_rich = max(richness)) |>
   mutate(cld = ifelse(site %in% c("Morni", "Chail"), yes = "a", no = "b"))
 
-read.csv("data/band_richness.csv") |>
+read.csv("output/band_richness.csv") |>
   filter(site != "All") |>
   mutate(site = factor(site, c("Morni", "Chail", "Churdhar"))) |>
-  ggplot(aes(x = site, y = Richness, color = site, fill = site)) +
+  ggplot(aes(x = site, y = richness, color = site, fill = site)) +
   geom_violin(color = NA) +
   geom_boxplot(fill = "white", width = 0.1, alpha = 0.8) +
   geom_text(data = ght, aes(x = site, y = max_rich + 20, label = cld),
@@ -571,10 +406,10 @@ read.csv("data/band_richness.csv") |>
 ## Elevational patterns of species richness
 
 ```{r}
-# df_elev_rang <- read.csv("data/site_plants_wcvp.csv") |>
+# df_elev_rang <- read.csv("output/site_plants_wcvp.csv") |>
 #   select(taxon_name, Morni:Churdhar) |>
 #   left_join(
-#     read.csv("data/site_spec_elev.csv")
+#     read.csv("output/site_spec_elev.csv")
 #   )
 # 
 # df_elev_rang |>
@@ -645,9 +480,9 @@ rbind(
 ```
 
 ```{r}
-# read.csv("data/band_richness.csv") |>
-#   filter(site == "All") |>
-#   filter(Richness == max(Richness))
+# read.csv("output/band_richness.csv") |>
+#   group_by(site) |>
+#   filter(richness == max(richness))
 ```
 
 The species richness varied from 60 to 226 in Morni Hills, 124 to 220 in Chail WLS, 106 to 520 in Churdhar WLS and 79 to 588 across All Sites. The elevational patterns of plant species richness also differed among the selected sites. The elevational pattern of species richness followed a non-linear unimodal pattern for Morni Hills, Chail WLS, and All Sites combined (@fig-esr). This pattern showed an initial increase in plant species richness with increasing elevation, reaching a peak and declining gradually at higher elevations. The species richness peaked around 800--900 m in Morni Hills, 1300--1400 m in Chail WLS and 1300--1400 m in All Sites. However, the Churdhar WLS showed a decreasing elevational pattern of plant species richness and the richness peak was observed around 1700--1800 in Churdhar WLS (@fig-esr **c**).
@@ -661,27 +496,25 @@ library(ggpubr)
 ## function to plot mde and richness
 rich.plot <- function(sitename, formula, sitecol){
   
-  df.rich <- read.csv("data/band_richness.csv") |>
-    mutate(Elevation = Elevation/1000) |>
+  df.rich <- read.csv("output/band_richness.csv") |>
     filter(site == {{sitename}})
   
-  df.mde <- read.csv("data/band_mde.csv") |>
-    mutate(Elevation = Elevation/1000) |>
+  df.mde <- read.csv("output/band_mde.csv") |>
     filter(site == {{sitename}})
   
   ## plot
   ggplot() +
-    geom_ribbon(data = df.mde, aes(x = Elevation, y = mde_mean, 
+    geom_ribbon(data = df.mde, aes(x = elevation, y = mde_mean, 
                                    ymin = mde_min, ymax = mde_max),
                 fill = "grey70", alpha = 0.1) +
-    geom_smooth(data = df.mde, aes(x = Elevation, y = mde_mean),
+    geom_smooth(data = df.mde, aes(x = elevation, y = mde_mean),
                 method = "loess", color = "grey70", linetype = 2) +
     
-    geom_smooth(data = df.rich, aes(x = Elevation, y = Richness),
+    geom_smooth(data = df.rich, aes(x = elevation, y = richness),
               method = "glm", formula = formula,
                 method.args = list(family = "poisson"),
               color = sitecol, fill = sitecol, alpha = 0.1) +
-    geom_point(data = df.rich, aes(x = Elevation, y = Richness),
+    geom_point(data = df.rich, aes(x = elevation, y = richness),
                shape = 21, size = 3, fill = sitecol, alpha = 0.75) +
     theme(axis.title = element_blank())
     
@@ -705,7 +538,7 @@ ggarrange(
 ) |>
   annotate_figure(
     left = text_grob("Species richness", rot = 90, size = 14),
-    bottom = text_grob("Elevation (km)", size = 14)
+    bottom = text_grob("Elevation (m)", size = 14)
   )
 
 # ggsave(filename = "figs/fig5.pdf", width = 7, height = 5, units = "in")
@@ -733,7 +566,7 @@ bind_rows(
          ) |>
   select(Site, term, est.format) |>
   pivot_wider(names_from = term, values_from = est.format) |>
-  rename("Elev^2^" = "Elev^2", "Elev^3^" = "Elev^3", "Elev^4^" = "Elev^4") |>
+  rename("Elev" = "elev", "Elev^2^" = "elev^2", "Elev^3^" = "elev^3", "Elev^4^" = "elev^4") |>
   knitr::kable()
 ```
 
@@ -748,10 +581,10 @@ The comparison of observed species richness (S) with predicted species richness 
 ## function to plot mde and richness
 mde.plot <- function(sitename, sitecol){
   
-  read.csv("data/band_mde.csv") |>
-    left_join(read.csv("data/band_richness.csv")) |>
+  read.csv("output/band_mde.csv") |>
+    left_join(read.csv("output/band_richness.csv")) |>
     filter(site == {{sitename}}) |>
-    ggplot(aes(x = mde_mean, y = Richness)) +
+    ggplot(aes(x = mde_mean, y = richness)) +
     geom_abline(slope = 1, intercept = 0, color = "grey", linetype = 2) +
     geom_smooth(method = "lm", alpha = 0.1,
                 color = sitecol, fill = sitecol) +
@@ -809,7 +642,7 @@ ggarrange(
 
 ## Elevational patterns of residual species richness
 
-The residual species richness (the difference in the observed and predicted null richness) varied from 1 to 446 across all the selected sites. These differences ranged from 8 to 150 for Morni Hills, 1 to 93 for Chail WLS, 3 to 446 for Churdhar WLS and  1 to 161 for All Sites combined. The elevational pattern of residual species richness followed a cubic relationship for All Sites  and a quadratic relationship for Morni Hills, Chail WLS and Churdhar WLS (@tbl-sres-coef). Generally, the residual species richness tended to decrease at lower elevations, whereas it tended to increase at higher elevations. The decrease was more prominent for Churdhar WLS, whereas the increase was more prominent for Morni Hills. Overall, this quadratic linear model explained about 94%, 89% and 99% variation in residual species richness for Morni Hills, Chail WLS and Churdhar WLS, respectively (@fig-sres). However, the residual species richness exhibited a strong cubic relationship with elevation for the pooled data from All Sites (@fig-sres **d**). This cubic relationship indicated a slight increase in residual species richness at lower elevations, then a substantial decrease at intermediate elevations and an increase at higher elevations. This cubic pattern of residual species richness suggests that the observed species richness substantially deviates from the predicted null richness at intermediate to higher elevations. 
+The residual species richness (the difference in the observed and predicted null richness) varied from 1 to 446 across all the selected sites. These differences ranged from 8 to 150 for Morni Hills, 1 to 93 for Chail WLS, 3 to 446 for Churdhar WLS and  1 to 161 for All Sites. The elevational pattern of residual species richness followed a cubic relationship for All Sites  and a quadratic relationship for Morni Hills, Chail WLS and Churdhar WLS (@tbl-sres-coef). The residual species richness tended to minimise towards lower elevations for All Sites, intermediate elevations for Chail WLS and higher elevations for Morni Hills and Churdhar WLS. The residual species richness showed increasing pattern for Morni Hills and decreasing pattern for Churdhar WLS with rise in elevation. Overall, this quadratic linear model explained about 94%, 89% and 99% variation in residual species richness for Morni Hills, Chail WLS and Churdhar WLS, respectively (@fig-sres). However, the residual species richness exhibited a strong cubic relationship with elevation for the pooled data from All Sites (@fig-sres **d**). This cubic relationship indicated a slight increase in residual species richness at lower elevations, then a substantial decrease at intermediate elevations and an increase at higher elevations. This cubic pattern of residual species richness suggests that the observed species richness substantially deviates from the predicted null richness at intermediate to higher elevations. 
 
 ```{r fig.width=7, fig.height=5}
 #| label: fig-sres
@@ -819,11 +652,11 @@ The residual species richness (the difference in the observed and predicted null
 ## function to plot mde and richness
 sres.plot <- function(sitename, formula, sitecol){
   
-  read.csv("data/band_mde.csv") |>
-    left_join(read.csv("data/band_richness.csv")) |>
-    mutate(sres = Richness - mde_mean, Elev = Elevation/1000) |>
+  read.csv("output/band_mde.csv") |>
+    left_join(read.csv("output/band_richness.csv")) |>
+    mutate(sres = richness - mde_mean, elev = elevation) |>
     filter(site == {{sitename}}) |>
-    ggplot(aes(x = Elev, y = sres)) +
+    ggplot(aes(x = elev, y = sres)) +
     geom_hline(yintercept = 0, color = "grey", linetype = 2) +
     geom_smooth(method = "lm", alpha = 0.1, formula = formula,
                 color = sitecol, fill = sitecol) +
@@ -839,41 +672,41 @@ mypos <- function(xnpc, xmin, xmax){
 morni_sres <- sres.plot("Morni", formula = y ~ x + I(x^2), sitecol = "#E69F00") +
   ylim(-175, 125) +
   annotate(geom = "text", size = 3.5, hjust = 0, color = "#E69F00",
-           x = mypos(0.125, 0.4, 1.3), y = mypos(0.98, -175, 125),
+           x = mypos(0.125, 400, 1300), y = mypos(0.98, -175, 125),
            label = "italic(y) == 237.6 - 1019.9*italic(x) + 680.4*italic(x^2)", 
            parse = TRUE) +
   annotate(geom = "text", size = 3.5, hjust = 0, color = "#E69F00",
-           x = mypos(0.125, 0.4, 1.3), y = mypos(0.82, -175, 125),
+           x = mypos(0.125, 400, 1300), y = mypos(0.82, -175, 125),
            label = "italic(R)[adj]^2 == ~0.94", parse = TRUE)
 
 chail_sres <- sres.plot("Chail", formula = y ~ x + I(x^2), sitecol = "#009E73") +
   ylim(-25, 125) +
   annotate(geom = "text", size = 3.5, hjust = 0, color = "#009E73",
-           x = mypos(0.125, 1, 2.1), y = mypos(0.98, -25, 125),
+           x = mypos(0.125, 1000, 2100), y = mypos(0.98, -25, 125),
            label = "italic(y) == 613.6 - 819.3*italic(x) + 269.9*italic(x^2)", 
            parse = TRUE) +
   annotate(geom = "text", size = 3.5, hjust = 0, color = "#009E73",
-           x = mypos(0.125, 1, 2.1), y = mypos(0.82, -25, 125),
+           x = mypos(0.125, 1000, 2100), y = mypos(0.82, -25, 125),
            label = "italic(R)[adj]^2 == ~0.89", parse = TRUE)
 
 chur_sres <- sres.plot("Churdhar", formula = y ~ x + I(x^2), sitecol = "#CC79A7") +
   ylim(-50, 525) +
   annotate(geom = "text", size = 3.5, hjust = 1, color = "#CC79A7",
-           x = 3.4, y = mypos(0.98, -50, 525),
+           x = 3400, y = mypos(0.98, -50, 525),
            label = "italic(y) == 2706.9 - 1883.7*italic(x) + 323.7*italic(x^2)", 
            parse = TRUE) +
   annotate(geom = "text", size = 3.5, hjust = 1, color = "#CC79A7",
-           x = 3.4, y = mypos(0.82, -50, 525),
+           x = 3400, y = mypos(0.82, -50, 525),
            label = "italic(R)[adj]^2 == ~0.99", parse = TRUE)
 
 all_sres <- sres.plot("All", formula = y ~ x + I(x^2) + I(x^3), sitecol = "#0072b2") +
   ylim(-175, 125) +
   annotate(geom = "text", size = 3.5, hjust = 1, color = "#0072b2",
-           x = 3.4, y = mypos(0.98, -175, 125),
+           x = 3400, y = mypos(0.98, -175, 125),
            label = "italic(y) == -222.6 + 591.2*italic(x) - 430.4*italic(x^2) + 82*italic(x^3)", 
            parse = TRUE) +
   annotate(geom = "text", size = 3.5, hjust = 1, color = "#0072b2",
-           x = 3.4, y = mypos(0.82, -175, 125),
+           x = 3400, y = mypos(0.82, -175, 125),
            label = "italic(R)[adj]^2 == ~0.91", parse = TRUE)
 
 ## arrange plots and label
@@ -885,32 +718,156 @@ ggarrange(
 ) |>
   annotate_figure(
     left = text_grob("Residual species richness", rot = 90, size = 14),
-    bottom = text_grob("Elevation (km)", size = 14)
+    bottom = text_grob("Elevation (m)", size = 14)
   )
 
 # ggsave(filename = "figs/fig7.pdf", width = 7, height = 5, units = "in")
+# ggsave(filename = "figs/fig7.png", width = 7, height = 5, units = "in", dpi = 300)
 ```
 
 ```{r}
-# read.csv("data/band_mde.csv") |>
-#   left_join(read.csv("data/band_richness.csv")) |>
-#   mutate(sres = Richness - mde_mean) |>
+# read.csv("output/band_mde.csv") |>
+#   left_join(read.csv("output/band_richness.csv")) |>
+#   mutate(sres = richness - mde_mean) |>
 #   group_by(site) |>
 #   summarise(smin = min(abs(sres)),
 #             smax = max(abs(sres)))
-
-# read.csv("data/band_mde.csv") |>
-#   left_join(read.csv("data/band_richness.csv")) |>
-#   mutate(sres = abs(Richness - mde_mean)) |>
-#   select(site, sres, Elevation) |>
-#   filter(site == "All") |>
+# 
+# read.csv("output/band_mde.csv") |>
+#   left_join(read.csv("output/band_richness.csv")) |>
+#   mutate(sres = abs(richness - mde_mean)) |>
+#   select(site, sres, elevation) |>
+#   group_by(site) |>
 #   filter(sres == min(sres))
 ```
 
+## Influence of observed species
+
+The elevational patterns of plant species substantially varied with total number of observed plant species (@fig-esr-sp). The relationship between species richness and elevation becomes steeper with increasing number of total species across all sites. As the total number of species decreases, the richness patterns become flatter and species richness spread across the elevational gradient. In general, the richness patterns tend to follow a unimodal distribution at higher numbers of total observed plant species for each site. For each site, the near mid-elevational richness peak (elevation with maximum species richness) showed higher sensitivity to the total number of observed species than the species richness at lower or upper elevation limit of each study site (@fig-esr-sp).
+
+```{r}
+#| label: fig-esr-sp
+#| fig-cap: Influence of total number of observed species (N~obs~) on elevational patterns of plant species richness for (a) Morni Hills, (b) Chail WLS, (c) Churdhar WLS, and (d) All Sites. The smooth line was fitted using the polynomial Poisson generalised linear model (GLM) with log-link function (see @tbl-bmod-gof). The shaded region around the fitted solid line represents the 95% confidence intervals. The legend shows the difference in total number of observed species for Morni Hills (N~obs~ &equals; 568), Chail WLS (N~obs~ &equals; 377), Churdhar WLS (N~obs~ &equals; 561) and All Sites (N~obs~ &equals; 1159).
+
+
+nesr.plot <- function(sitename, fm){
+  
+  nsp_pal <- c(
+    "-200" = "#dfc27d", "-100" = "#a6611a", "0" = "grey30", 
+     "100" = "#018571",  "200" = "#80cdc1"
+  )
+  
+  read.csv("output/species_sensitivity_richness.csv") |>
+    left_join(
+      read.csv("output/species_sensitivity_mde.csv"),
+      by = join_by(elevation, species, site)
+    ) |>
+    mutate(species = case_when(site == "Morni"    ~species - 568,
+                               site == "Chail"    ~species - 377,
+                               site == "Churdhar" ~species - 561,
+                               site == "All"      ~species - 1159),
+           species = as.factor(species)
+    ) |>
+    filter(species %in% c("200", "100", "0", "-100", "-200")) |>
+    filter(site == {{sitename}}) |>
+    
+    ggplot(aes(x = elevation, y = richness, color = species, fill = species)) +
+    geom_smooth(alpha = 0.1, method = "glm", formula = fm,
+                method.args = list(family = "poisson")) +
+    geom_point(shape = 21, size = 2, alpha = 0.75, color = "black") +
+    guides(color = guide_legend(reverse = TRUE),
+           fill  = guide_legend(reverse = TRUE)) +
+    scale_color_manual(values = nsp_pal, name = expression(Delta~N[obs])) +
+    scale_fill_manual(values  = nsp_pal, name = expression(Delta~N[obs])) +
+    theme(axis.title = element_blank())
+}
+
+
+
+## arrange plots and label
+ggarrange(
+  nesr.plot("Morni", y ~ x + I(x^2) + I(x^3)),
+  nesr.plot("Chail", y ~ x + I(x^2)), 
+  nesr.plot("Churdhar", y ~ x + I(x^2)) + ylim(65, 650), 
+  nesr.plot("All", y ~ x + I(x^2) + I(x^3) + I(x^4)),
+  
+  labels = c("a)", "b)", "c)", "d)"), align = "hv", 
+  label.x = 0.15, label.y = 0.975,
+  common.legend = TRUE, legend = "right"
+) |>
+  annotate_figure(
+    left = text_grob("Species richness", rot = 90, size = 14),
+    bottom = text_grob("Elevation (m)", size = 14)
+  )
+
+# ggsave(filename = "figs/fig8.pdf", width = 7, height = 5, units = "in")
+```
+
+Further, the total number of observed species (N~obs~) also seemed to affect the relationship between observed richness (S) and predicted richness (S~null~) by mid-domain effect null model (@fig-mde-sp). With increase in total number of species, the observed species richness tended to converge towards the predictions of null model. The total number of species showed a significant positive association with the slope values estimated from a linear regression of observed species richness against the predictions of null model (@fig-slope-sp). These slope values showed significant positive increase with increase in total number of plant species for the selected sites. The highest association was observed at intermediate elevations for Chail WLS (*r* = 0.95, *p* < 0.001). However, the entire elevational gradient showed non-significant positive Pearson's correlation coefficient (*r* = 0.36, *p* = 0.342). Thus, the elevational patterns for entire elevational gradient (All Sites) remained unaffected by the total number of plant species (@fig-slope-sp). Despite the convergence of elevational patterns towards the predictions of null model at greater number of total species, the observed elevational pattern remained substantially different from the predictions of null model (@fig-mde-sp). 
+
+```{r}
+#| label: fig-slope-sp
+#| fig-cap: Effect of total number of observed species (N~obs~) on the relationship between observed richness (S) and predicted richness (S~null~) by mid-domain effect null model for (a) Morni Hills, (b) Chail WLS, (c) Churdhar WLS, and (d) All Sites. The slope value was estimated using a general linear model with observed species richness (S) as the response variable and the predicted species richness (S~null~) as predictor variable. The total number of observed species (N~obs~) for Morni Hills, Chail WLS, Churdhar WLS and All Sites were 568, 377, 561 and 1159, respectively. The solid line represents the fitted linear regression line and the shaded region represents the 95% confidence intervals. The strength and direction of associated was estimated using the Pearson's correlation coefficient (*r*) and associated statistical significance (*p*-value).
+
+nslope.plot <- function(sitename, label.y){
+  
+  read.csv("output/species_sensitivity_richness.csv") |>
+    left_join(
+      read.csv("output/species_sensitivity_mde.csv"),
+      by = join_by(elevation, species, site)
+    ) |>
+    mutate(species = case_when(site == "Morni"    ~species - 568,
+                               site == "Chail"    ~species - 377,
+                               site == "Churdhar" ~species - 561,
+                               site == "All"      ~species - 1159),
+           species = as.factor(species)
+    ) |>
+    group_by(site, species) |>
+    nest() |>
+    mutate(
+      Model = map(data, ~lm(richness ~ mde, data = .x) |> broom::tidy())
+    ) |> 
+    select(-data) |>
+    unnest(Model) |>
+    filter(term == "mde") |>
+    mutate(x = as.character(species), x = as.numeric(x)) |>
+    select(site, species, estimate, std.error, x) |>
+    filter(site == {{sitename}}) |>
+    
+    ggplot(aes(x = x, y = estimate, color = site)) +
+    geom_smooth(aes(fill = site), alpha = 0.1, method = "lm", formula = y ~ x) +
+    geom_point(aes(fill = site), shape = 21, size = 3, color = "black") +
+    ggpubr::stat_cor(cor.coef.name = "r", p.accuracy = 0.001, 
+                     label.x = -150, label.y = label.y) +
+    scale_color_manual(values = mycol) +
+    scale_fill_manual(values = mycol) +
+    theme(legend.position = "none",
+          axis.title = element_blank())
+}
+
+## arrange plots and label
+ggarrange(
+  nslope.plot("Morni", 0.59),
+  nslope.plot("Chail", 0.65), 
+  nslope.plot("Churdhar", 0.4), 
+  nslope.plot("All", 0.929),
+  
+  labels = c("a)", "b)", "c)", "d)"), align = "hv", 
+  label.x = 0.15, label.y = 0.975
+) |>
+  annotate_figure(
+    left = text_grob(expression("Slope estimate ( " * S ~ "~" ~ S[null] * ")"), 
+                     rot = 90, size = 14),
+    bottom = text_grob(expression("Difference in total observed species (" * Delta~N[obs] * ")"),
+                       size = 14)
+  )
+
+# ggsave(filename = "figs/fig9.pdf", width = 7, height = 5, units = "in")
+```
 
 # Discussion
 
-In this study, we aimed to explore the elevational patterns of plant species richness. Additionally, we sought to compare the observed pattern with null predictions and examine the elevational patterns of residual plant species (i.e., the difference between observed and predicted values from the null model) to assess the influence of random processes on species richness. Our results indicated substantial variation in the observed plant taxa across sites along the elevational gradient (Question 1). Plant species richness generally exhibited a unimodal relationship with elevation, but a decreasing pattern was also observed (Question 2). Further, the observed species richness considerably deviated from the predictions of the null model across the sites (Question 3). The magnitude and direction of these deviations (residual species richness) varied along the elevation gradient. Furthermore, the residual species richness demonstrated non-linear relationships with elevation (Question 4). Our findings provide valuable insights into the relationship between elevational gradients and plant species richness.
+In this study, we aimed to explore the elevational patterns of plant species richness. Additionally, we sought to compare the observed pattern with null predictions and examine the elevational patterns of residual plant species (i.e., the difference between observed and predicted values from the null model) to assess the influence of random processes on species richness. Our results indicated substantial variation in the observed plant taxa across sites along the elevational gradient (Question 1). Plant species richness generally exhibited a unimodal relationship with elevation, but a decreasing pattern was also observed (Question 2). Further, the observed species richness considerably deviated from the predictions of the null model across the sites (Question 3). The magnitude and direction of these deviations (residual species richness) varied along the elevation gradient. Furthermore, the residual species richness demonstrated non-linear relationships with elevation (Question 4). Our findings provide valuable insights into the relationship between elevational gradients and plant species richness. Although the richness patterns for individual sites varied with total number of observed species, our results for entire elevational gradient (All Sites) showed little variation due to the total number of observed species (@fig-slope-sp). Thus, our findings for entire elevational gradient are robust to the variation in total number of observed species.
 
 Our data indicated substantial differences in observed plant taxa across the three sites along the elevational gradient. We recorded a greater number of total and unique plant taxa at lower (Morni Hills) and upper (Churdhar WLS) elevations as compared to intermediate elevations (Chail WLS). Contrary to our expectations, we recorded a minimum number of total and unique plant taxa at intermediate elevations (Chail WLS). The lower taxa records at intermediate elevations suggest the dominance of fewer plant taxa. Alternatively, this region may be under-explored and more plant taxa can be recorded in future surveys. Further, we observed no difference in the average species richness per elevational band for lower and intermediate elevations, but it was significantly higher at upper elevational gradients. The upper elevational gradient (Churdhar WLS) showed a higher mean and a large variance for plant species richness per elevational band. This higher mean and variance at high-elevation site indicates striking variation in plant species richness along the elevational gradient. Thus, our data suggest substantial variation in plant taxa across the elevational gradient in the Western Himalayas.
 
@@ -918,11 +875,15 @@ The primary aim of this study was to investigate the elevational patterns of pla
 
 One notable finding of the present study was the decreasing pattern of plant species richness at higher elevational gradients (Churdhar WLS). This finding aligns with earlier studies conducted in the Himalayas [@Bisht2022] and other mountain ecosystems [@Di_Musciano2021; @Kessler2011; @Trigas2013]. Such decreasing elevational pattern of species richness has also been observed for microbes [@Bryant2008], bryophytes [@Rodriguez-Quiel2022], ferns [@Kessler2011], trees [@Homeier2010], and vascular plants [@Bisht2022; @Peters2016; @Trigas2013]. These observations suggest that decreasing patterns of plant species richness are not uncommon, though the unimodal pattern is frequently observed [@Guo2013; @McCain2010]. Thus, plant species richness may not always exhibit a unimodal relationship with elevation and further studies along elevational gradients would be valuable for understanding elevational patterns of species richness.
 
-Another aim of the present study was to compare the observed species richness patterns to null predictions using the mid-domain effect (MDE) null model [@Colwell2000]. The MDE null model assumes that species ranges are randomly distributed within the given domains, and predicts a unimodal pattern of species richness along an elevational gradient, with peak richness occurring at the midpoint of the gradient. This pattern arises due to the geometric constraints imposed by the boundaries of the elevational range [@Colwell2004]. Thus, the MDE model assumes that species richness is solely determined by the spatial constraints of the geographic range, independent of environmental factors [@Colwell2000]. Our results showed significant to substantial deviations in observed species richness from the predictions of the MDE null model. Specifically, the species richness patterns at upper (Churdhar WLS) and lower (Morni Hills) elevational gradients significantly deviated from the predictions of the MDE model. This significant deviation might be due to small-ranged species because smaller ranges experience fewer geometric constrain than larger ranges [@Dunn2007]. Further, the observed species richness across the entire elevational gradient (All Sites) was closely matched with predictions of the MDE model followed by the intermediate elevational gradient (Chail WLS). These close agreements with predictions of the MDE model might be due to increased geometric constraints on species ranges. Large-ranged species at intermediate elevations and the extended scale for the entire elevational gradient might have contributed to the increased geometric constraints on species ranges. Despite variable agreement [@Colwell2004], we observed considerable deviations in observed species richness from predictions of the null model. Thus, our findings indicate that other factors beyond the range constraints may play a crucial role in shaping elevational patterns of species richness.
+Another aim of the present study was to compare the observed species richness patterns to null predictions using the mid-domain effect (MDE) null model [@Colwell2000]. Our results showed significant to substantial deviations in observed species richness from the predictions of the MDE null model. Specifically, the species richness patterns at upper (Churdhar WLS) and lower (Morni Hills) elevational gradients significantly deviated from the predictions of the MDE model. This significant deviation might be due to small-ranged species because smaller ranges experience fewer geometric constrain than larger ranges [@Dunn2007]. Further, the observed species richness across the entire elevational gradient (All Sites) was closely matched with predictions of the MDE model followed by the intermediate elevational gradient (Chail WLS). These close agreements with predictions of the MDE model might be due to increased geometric constraints on species ranges. Large-ranged species at intermediate elevations and the extended scale for the entire elevational gradient might have contributed to the increased geometric constraints on species ranges. Despite variable agreement [@Colwell2004], we observed considerable deviations in observed species richness from predictions of the null model. Thus, our findings indicate that other factors beyond the range constraints may play a crucial role in shaping elevational patterns of species richness.
 
-In addition to comparing observed patterns with null predictions, we aimed to investigate the elevational pattern of residual species richness (the difference between observed species richness and predictions of the null model). The residual species richness represents the magnitude and direction of deviations from the predictions of mid-domain effect (MDE) null model. We observed positive residual species richness for sites representing intermediate (Chail WLS) and upper (Churdhar WLS) elevational gradients. This positive deviation indicated higher observed species richness than the predictions under the null model of range constraints. On the other hand, we observed a general negative residual species richness for the entire elevational gradient (All Sites) and the site representing a lower elevation gradient (Morni Hills). This negative residual species richness suggested lower than expected species richness based on range constraints alone. These deviations of variable magnitude and directions indicate the presence of other factors driving species richness rather than the range constraints alone.
+In addition to comparing observed patterns with null predictions, we aimed to investigate the elevational pattern of residual species richness (the difference between observed species richness and predictions of the null model). The residual species richness represents the magnitude and direction of deviations from the predictions of MDE null model. We observed positive residual species richness for sites representing intermediate (Chail WLS) and upper (Churdhar WLS) elevational gradients. This positive deviation indicated higher observed species richness than the predictions under the null model of range constraints. On the other hand, we observed a general negative residual species richness for the entire elevational gradient (All Sites) and the site representing a lower elevation gradient (Morni Hills). This negative residual species richness suggested lower than expected species richness based on range constraints alone. These deviations of variable magnitude and directions indicate the presence of other factors driving species richness rather than the range constraints alone.
 
 An important finding of the present study is that residual species richness showed significant quadratic relationships with elevation for the three individual sites and a significant cubic relationship for the entire elevational gradient. The significant quadratic relationships observed at the three individual sites suggest a complex pattern of species richness at smaller elevational gradients. This quadratic relationship indicates that the magnitude of deviation initially decreases with elevation, reaches a minimum, and then increases at higher elevations. Such a relationship between elevation and magnitude of deviations indicates that species richness patterns are shaped by the joint effects of different ecological processes along the elevational gradient. Further, the significant cubic relationship observed for the entire elevational gradient suggests a more complex and non-linear response of species richness to elevation. This cubic relationship indicates that the magnitude of deviation initially increases with elevation, reaches a peak, declines, and then potentially increases again at higher elevations. Such a pattern suggests the presence of additional factors or processes that influence species richness dynamics along the entire gradient. These factors could include large-scale climatic variables, historical and evolutionary processes, or interactions with other ecological variables that are not accounted for by the null model [@Gaston2000]. 
+
+Our study revealed the influence of total number of observed species on elevational patterns of species richness. We showed that the richness patterns inferred from range interpolation are sensitive to the total number of observed plant species. The observed elevational patterns tend to follow a unimodal distribution with increase in total number of observed species. This convergence to unimodal distribution may be parallelly driven by the central limit theorem. Further, our study indicated that the richness patterns varied with total number of observed species for individual sites (N~obs~ < 600), but not for the entire elevational gradient (N~obs~ > 1000). This observation suggests that the effect of total number of observed species are stronger at smaller scales of elevational gradients. Thus, our study indicated that a total number of species greater than 1000 and an elevational gradient of greater than 3000 metres might be useful to study the elevational patterns of species richness at larger spatial scales.
+
+Apart from richness patterns, the total number of observed species also influenced the relationship between observed species richness and the predictions of mid-domain effect null model. This relationship becomes progressively stronger with increase in total number of observed species. Thus, the observed richness patterns tend to fit the mid-domain effect null model with larger number of total observed species. This convergence towards null model may be driven by increased proportion of large-ranged species, experiencing greater geometric constraints [@Colwell2000; @Dunn2007]. However, we showed that the effect of total number of observed species was strongest at intermediate elevational gradient (Chail WLS), but disappear for entire elevational gradient (All Sites). Thus, the magnitude of this effect seemed to also depend on the position and extent of the elevational gradient. While the effect of spatial scale (elevational extent) has been previously noted [@Dunn2007], our study also indicated variation due to the position of elevational gradient. With increase in total number of observed species, the richness patterns tend to fit the mid-domain effect null model more rapidly at intermediate elevational gradient than the lower or upper elevational gradient. Thus, our study highlights a complex interplay between sample size, spatial scale, and elevational patterns of species richness. 
 
 The observed species richness showed significant deviations from the predictions of the null model and the residual species richness also demonstrated a significant quadratic or cubic relationship with elevation. These observations indicate that the observed species richness pattern can not be achieved solely due to random processes. Our study highlights the limitations of the null model in fully capturing the observed elevational patterns of species richness. While null models provide a useful baseline for comparison and understanding broad-scale patterns, their assumptions and simplifications may not fully represent the complexity of ecological processes and interactions that shape elevational gradients. The observed deviations from the null model emphasise the need for considering additional environmental variables, biotic interactions, and historical factors when studying elevational patterns of species richness.
 
@@ -935,7 +896,7 @@ In conclusion, our study contributes to understanding plant species richness alo
 
 # Acknowledgements {.unnumbered}
 
-The authors are grateful to the Principal Chief Conservator of Forests (PCCF) of the Haryana Forest Department and the Himachal Pradesh Forest Department for kindly permitting them to visit the selected protected areas. We are also thankful to the Chairperson, Department of Botany, Panjab University, Chandigarh, for providing all the necessary facilities required for the work. We want to express our heartfelt gratitude to *Sabir Hussain*, *Alok Sharma*, *Kamal*, *Pravesh* for their invaluable assistance and support during the fieldwork phase of this research. Additionally, we appreciate the staff and authorities of the Forest Department of Himachal Pradesh, who facilitated the logistics and permits required for the fieldwork.
+The authors are grateful to the Principal Chief Conservator of Forests (PCCF) of the Haryana Forest Department and the Himachal Pradesh Forest Department for kindly permitting them to visit the selected protected areas. We are also thankful to the Chairperson, Department of Botany, Panjab University, Chandigarh, for providing all the necessary facilities required for the work. We express our heartfelt gratitude to *Sabir Hussain*, *Alok Sharma*, *Kamal*, *Pravesh* for their invaluable assistance and support during the fieldwork phase of this research. Additionally, we appreciate the staff and authorities of the Forest Department of Himachal Pradesh, who facilitated the logistics and permits required for the fieldwork. We acknowledge the editor and two anonymous reviewers for their constructive and insightful comments on the earlier version of this manuscript.
 
 # Author contributions
 
@@ -947,11 +908,9 @@ auth.cont <- function(author){
   
   paste0(df_auth[, 1], " (", df_auth[, 2], ")", collapse = ", ")
 }
-
-
-# **Abhishek Kumar:** `r auth.cont("AK")`. **Meenu Patil:** `r auth.cont("MP")`. **Pardeep Kumar:** `r auth.cont("PK")`. **Anand Narain Singh:** `r auth.cont("ANS")`.
 ```
 
+**Abhishek Kumar:** `r auth.cont("AK")`. **Meenu Patil:** `r auth.cont("MP")`. **Pardeep Kumar:** `r auth.cont("PK")`. **Anand Narain Singh:** `r auth.cont("ANS")`.
 
 # Conflict of interest
 
@@ -959,7 +918,7 @@ The authors declare that they have no known competing financial interests or per
 
 # Data availability
 
-All data and `R` codes used in this research are currently available from <https://github.com/kumar-a/richness-patterns>. We will deposit it in a free, suitable repository like figshare or zenodo after acceptance.
+The data that support the findings of this study are openly available in figshare at <https://doi.org/10.6084/m9.figshare.23828784>. A copy of all data and `R` codes used in this study is also maintained at <https://github.com/kumar-a/richness-patterns>.
 
 # Funding
 
@@ -972,28 +931,28 @@ University Grants Commission, Government of India, New Delhi is acknowledged for
 #| tbl-cap: Top five dominant families of recorded vascular plant taxa across the sites. The total number of species within the respective family is shown in parentheses.
 
 
-morni_fam <- read.csv("data/site_plants_wcvp.csv") |>
+morni_fam <- read.csv("output/site_plants_wcvp.csv") |>
   filter(Morni == 1) |>
   count(family, sort = TRUE) |>
   head(5) |>
   mutate(Morni = paste0(family, " (", n, ")")) |>
   select(Morni)
 
-chail_fam <- read.csv("data/site_plants_wcvp.csv") |>
+chail_fam <- read.csv("output/site_plants_wcvp.csv") |>
   filter(Chail == 1) |>
   count(family, sort = TRUE) |>
   head(5) |>
   mutate(Chail = paste0(family, " (", n, ")")) |>
   select(Chail)
 
-chur_fam <- read.csv("data/site_plants_wcvp.csv") |>
+chur_fam <- read.csv("output/site_plants_wcvp.csv") |>
   filter(Churdhar == 1) |>
   count(family, sort = TRUE) |>
   head(5) |>
   mutate(Churdhar = paste0(family, " (", n, ")")) |>
   select(Churdhar)
 
-tot_fam <- read.csv("data/site_plants_wcvp.csv") |> 
+tot_fam <- read.csv("output/site_plants_wcvp.csv") |> 
   select(taxon_name, genus, family, Morni:Churdhar) |>
   distinct(taxon_name, .keep_all = TRUE) |>
   count(family, sort = TRUE) |>
@@ -1014,22 +973,22 @@ bind_cols(
 mod.eval <- function(sitename){
   
   ## dataset
-  df <- read.csv("data/band_richness.csv") |>
-    mutate(Elev = Elevation/1000) |> ## convert to kilometre
+  df <- read.csv("output/band_richness.csv") |>
+    mutate(Elev = elevation/1000) |> ## convert to kilometre
     filter(site == {{sitename}})
   
   ## models with polynomial orders
-  m0 <- glm(Richness ~ 1, 
+  m0 <- glm(richness ~ 1, 
             data = df, family = poisson(link = "log"))
-  m1 <- glm(Richness ~ Elev, 
+  m1 <- glm(richness ~ Elev, 
             data = df, family = poisson(link = "log"))
-  m2 <- glm(Richness ~ Elev + I(Elev^2), 
+  m2 <- glm(richness ~ Elev + I(Elev^2), 
             data = df, family = poisson(link = "log"))
-  m3 <- glm(Richness ~ Elev + I(Elev^2) + I(Elev^3),
+  m3 <- glm(richness ~ Elev + I(Elev^2) + I(Elev^3),
             data = df, family = poisson(link = "log"))
-  m4 <- glm(Richness ~ Elev + I(Elev^2) + I(Elev^3) + I(Elev^4), 
+  m4 <- glm(richness ~ Elev + I(Elev^2) + I(Elev^3) + I(Elev^4), 
             data = df, family = poisson(link = "log"))
-  m5 <- glm(Richness ~ Elev + I(Elev^2) + I(Elev^3) + I(Elev^4) + I(Elev^5), 
+  m5 <- glm(richness ~ Elev + I(Elev^2) + I(Elev^3) + I(Elev^4) + I(Elev^5), 
             data = df, family = poisson(link = "log"))
   
   ## function to estimate corrected AIC (AICc), phi, d2 and d2adj
@@ -1086,11 +1045,11 @@ bind_rows(
 mde.reg <- function(sitename){
   
   ## data for observed and predicted
-  smod <- read.csv("data/band_mde.csv") |>
-    left_join(read.csv("data/band_richness.csv")) |>
+  smod <- read.csv("output/band_mde.csv") |>
+    left_join(read.csv("output/band_richness.csv")) |>
     filter(site == {{sitename}}) |>
-    select(mde_mean, Richness) |>
-    with(lm(Richness ~ mde_mean)) |>
+    select(mde_mean, richness) |>
+    with(lm(richness ~ mde_mean)) |>
     summary()
   
   ## collect parameters in data frame
@@ -1144,9 +1103,9 @@ bind_rows(
 sres.reg <- function(sitename){
   
   if (sitename == "All") {
-    smod <- read.csv("data/band_mde.csv") |> 
-      left_join(read.csv("data/band_richness.csv")) |>
-      mutate(sres = Richness - mde_mean, Elev = Elevation/1000) |>
+    smod <- read.csv("output/band_mde.csv") |> 
+      left_join(read.csv("output/band_richness.csv")) |>
+      mutate(sres = richness - mde_mean, Elev = elevation/1000) |>
       filter(site == {{sitename}}) |>
       with(lm(
        sres ~ Elev + I(Elev^2) + I(Elev^3)
@@ -1175,9 +1134,9 @@ sres.reg <- function(sitename){
     ) |>
       mutate(p = pf(f, f.ndf, f.ddf, lower.tail = FALSE))
   } else {
-    smod <- read.csv("data/band_mde.csv") |> 
-      left_join(read.csv("data/band_richness.csv")) |>
-      mutate(sres = Richness - mde_mean, Elev = Elevation/1000) |>
+    smod <- read.csv("output/band_mde.csv") |> 
+      left_join(read.csv("output/band_richness.csv")) |>
+      mutate(sres = richness - mde_mean, Elev = elevation/1000) |>
       filter(site == {{sitename}}) |>
       with(lm(
        sres ~ Elev + I(Elev^2)
@@ -1240,15 +1199,15 @@ bind_rows(
 #| label: fig-richness-linear
 #| fig-cap: Exploratory analysis of the relationship between elevation and plant species richness. The scatter plot illustrates the univariate distribution of plant species richness across different elevations, providing initial insights into the potential relationship between these variables. Pearson's correlation coefficient (*r*) was calculated to explore the strength and direction of the association. The regression line was fitted using the general linear model and the shaded region represents the 95% confidence intervals.
 
-read.csv("data/band_richness.csv") |>
+read.csv("output/band_richness.csv") |>
   mutate(site = case_when(
     site == "Morni"    ~"a) Morni Hills",
     site == "Chail"    ~"b) Chail WLS",
     site == "Churdhar" ~"c) Churdhar WLS",
     site == "All"      ~"d) All Sites"
   )) |>
-  ggplot(aes(x = Elevation, y = Richness, color = site, fill = site)) +
-  geom_smooth(method = "lm", alpha = 0.1) +
+  ggplot(aes(x = elevation, y = richness, color = site, fill = site)) +
+  geom_smooth(method = "lm", formula = y ~ x, alpha = 0.1) +
   geom_point(shape = 21, size = 3, color = "black", alpha = 0.75) +
   scale_color_manual(values = c("#e69f00", "#009e73", "#cc79a7", "#0072b2")) +
   scale_fill_manual(values  = c("#e69f00", "#009e73", "#cc79a7", "#0072b2")) +
@@ -1261,14 +1220,14 @@ read.csv("data/band_richness.csv") |>
   labs(x = "Elevation (m)", y = "Species richness") +
   theme(legend.position = "none")
 
-# ggsave(filename = "figs/fig8.pdf", width = 7, height = 5, units = "in")
+# ggsave(filename = "figs/figA1.pdf", width = 7, height = 5, units = "in")
 ```
 
 ```{r fig.width=7, fig.height=7}
 #| label: fig-qqplot
 #| fig-cap: Quantile-quantile (Q-Q) plot demonstrating model diagnostics for elevational patterns of species richness in (a) Morni Hills, (b) Chail WLS, (c) Churdhar WLS, and (d) All Sites. The plot shows the overall deviations from the simulation-based expected distribution with added tests for correct distribution (KS test), dispersion and outliers. The outliers are defined as values outside the simulation envelope. The plot assesses the goodness-of-fit between observed and expected quantiles, aiding in evaluating model assumptions and performance.
 
-# pdf("figs/fig9.pdf", width = 7, height = 7)
+# pdf("figs/figA2.pdf", width = 7, height = 7)
 
 par(mfrow = c(2, 2))
 bmod_morni |>
@@ -1299,7 +1258,7 @@ mtext("d)", line = 1.5, adj = 0, font = 2)
 #| label: fig-residual-plot
 #| fig-cap: Residual plots showing the deviations in model residuals against the model predictions for elevational patterns of species richness in (a) Morni Hills, (b) Chail WLS, (c) Churdhar WLS, and (d) All Sites. The deviation from the uniformity (in the y-direction) was estimated by comparing the empirical 0.25, 0.5 and 0.75 quantiles in the y-direction (red solid lines) with the theoretical 0.25, 0.5 and 0.75 quantiles (dashed black line). The  simulation-based outliers are highlighted as red stars.
 
-# pdf("figs/fig10.pdf", width = 7, height = 7)
+# pdf("figs/figA3.pdf", width = 7, height = 7)
 
 par(mfrow = c(2, 2))
 bmod_morni |>
@@ -1330,7 +1289,7 @@ mtext("d)", line = 2, adj = 0, font = 2)
 #| label: fig-dispersion-all
 #| fig-cap: Simulation-based (n &equals; 1000) dispersion test of the best model for All Sites (full elevational gradient). This test compares the variance of the observed raw residuals (red line) against the variance of simulated residuals (histogram). The variances are scaled to the mean simulated variance. A significant ratio > 1 indicates overdispersion, and a significant ratio < 1 indicates underdispersion.
 
-# pdf("figs/fig11.pdf", width = 7, height = 5)
+# pdf("figs/figA4.pdf", width = 7, height = 5)
 
 bmod_all |>
   simulateResiduals(n = 1000, refit = FALSE) |>
@@ -1343,15 +1302,15 @@ bmod_all |>
 #| label: fig-sres-linear
 #| fig-cap: Exploratory analysis of the relationship between elevation and residual species richness. The residual species richness (S~res~) was calculated by subtracting the predicted species richness (generated by the mid-domain effect null model) from the observed species richness (S) for each 100-m elevational band. The scatter plot illustrates the univariate distribution of residual species richness across different elevations, providing initial insights into the potential relationship between these variables. Pearson's correlation coefficient (*r*) was calculated to explore the strength and direction of the association. The regression line was fitted using the general linear model and the shaded region represents the 95% confidence intervals.
 
-read.csv("data/band_mde.csv") |>
-  left_join(read.csv("data/band_richness.csv")) |>
+read.csv("output/band_mde.csv") |>
+  left_join(read.csv("output/band_richness.csv")) |>
   mutate(site = case_when(
     site == "Morni"    ~"a) Morni Hills",
     site == "Chail"    ~"b) Chail WLS",
     site == "Churdhar" ~"c) Churdhar WLS",
     site == "All"      ~"d) All Sites"
-  ), sres = Richness - mde_mean) |>
-  ggplot(aes(x = Elevation, y = sres, color = site, fill = site)) +
+  ), sres = richness - mde_mean) |>
+  ggplot(aes(x = elevation, y = sres, color = site, fill = site)) +
   geom_hline(yintercept = 0, color = "grey", linetype = 2) +
   geom_smooth(method = "lm", alpha = 0.1) +
   geom_point(shape = 21, size = 3, color = "black", alpha = 0.75) +
@@ -1366,7 +1325,64 @@ read.csv("data/band_mde.csv") |>
   labs(x = "Elevation (m)", y = "Residual species richness") +
   theme(legend.position = "none")
 
-# ggsave(filename = "figs/fig12.pdf", width = 7, height = 5, units = "in")
+# ggsave(filename = "figs/figA5.pdf", width = 7, height = 5, units = "in")
+```
+
+
+```{r}
+#| label: fig-mde-sp
+#| fig-cap: Effect of total number of observed species (N~obs~) on the relationship between observed richness and predicted richness by null model for (a) Morni Hills, (b) Chail WLS, (c) Churdhar WLS, and (d) All Sites. The coloured solid line represents the fitted linear regression line and the shaded region represents the 95% confidence intervals. The observed species richness was used as the response variable and the predicted species richness was used as a predictor variable. The grey dashed line indicates the 1:1 line. The legend shows the difference in total number of observed species for Morni Hills (N~obs~ &equals; 568), Chail WLS (N~obs~ &equals; 377), Churdhar WLS (N~obs~ &equals; 561) and All Sites (N~obs~ &equals; 1159).
+
+nmde.plot <- function(sitename){
+  
+  nsp_pal <- c(
+    "-200" = "#dfc27d", "-100" = "#a6611a", "0" = "grey30", 
+     "100" = "#018571",  "200" = "#80cdc1"
+  )
+  
+  read.csv("output/species_sensitivity_richness.csv") |>
+    left_join(
+      read.csv("output/species_sensitivity_mde.csv"),
+      by = join_by(elevation, species, site)
+    ) |>
+    mutate(species = case_when(site == "Morni"    ~species - 568,
+                               site == "Chail"    ~species - 377,
+                               site == "Churdhar" ~species - 561,
+                               site == "All"      ~species - 1159),
+           species = as.factor(species)
+    ) |>
+    filter(species %in% c("200", "100", "0", "-100", "-200")) |>
+    filter(site == {{sitename}}) |>
+    
+    ggplot(aes(x = mde, y = richness, color = species, fill = species)) +
+    geom_abline(slope = 1, intercept = 0, linetype = 2, color = "grey") +
+    geom_smooth(alpha = 0.1, method = "lm", formula = y ~ x, se = TRUE) +
+    guides(color = guide_legend(reverse = TRUE),
+           fill  = guide_legend(reverse = TRUE)) +
+    scale_color_manual(values = nsp_pal, name = expression(Delta~N[obs])) +
+    scale_fill_manual(values  = nsp_pal, name = expression(Delta~N[obs])) +
+    theme(axis.title = element_blank())
+}
+
+
+
+## arrange plots and label
+ggarrange(
+  nmde.plot("Morni"),
+  nmde.plot("Chail"), 
+  nmde.plot("Churdhar"), 
+  nmde.plot("All"),
+  
+  labels = c("a)", "b)", "c)", "d)"), align = "hv", 
+  label.x = 0.15, label.y = 0.975,
+  common.legend = TRUE, legend = "right"
+) |>
+  annotate_figure(
+    left = text_grob("Observed richness", rot = 90, size = 14),
+    bottom = text_grob("Predicted richness", size = 14)
+  )
+
+# ggsave(filename = "figs/figA6.pdf", width = 7, height = 5, units = "in")
 ```
 
 # References

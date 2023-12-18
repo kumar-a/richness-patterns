@@ -1,9 +1,9 @@
 ﻿ID,Contribution,AK,MP,PK,ANS
-1,Conceptualisation,equal,equal,supporting,equal
+1,Conceptualisation,equal,supporting,NA,equal
 2,Methodology,lead,supporting,supporting,supporting
-3,Resources,equal,equal,equal,equal
+3,Resources,equal,supporting,supporting,equal
 4,Investigation,equal,equal,equal,supporting
-5,Data curation,lead,supporting,supporting,equal
+5,Data curation,lead,NA,NA,equal
 6,Formal analysis,lead,supporting,supporting,supporting
 7,Visualisation,lead,equal,supporting,NA
 8,Software,lead,NA,NA,NA

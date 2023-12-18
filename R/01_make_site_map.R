@@ -1,6 +1,8 @@
 # Author: Abhishek Kumar
 # Affiliation: Panjab University, Chandigarh
 # Email: abhikumar.pu@gmail.com
+# Date: 19 Dec 2023
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 ## load required packages
 library(sf)             ## vector data handling
@@ -8,15 +10,21 @@ library(terra)          ## raster data handling
 library(tidyverse)      ## general data manipulation and visualisation
 library(tmap)           ## visualising spatial data
 
-## boundaries for protected aras boundary
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+## boundaries for protected areas boundary
 mh <- st_read("data/morni.gpkg", quiet = TRUE) |> 
   summarise() |> mutate(Name = "Morni Hills") |> st_transform(4326)
+
 khr <- st_read("data/khol_hi_raitan.gpkg", quiet = TRUE) |>
   filter(Type == "WLS") |> mutate(Name = "KHR WLS")
+
 chail <- st_read("data/chail.gpkg", quiet = TRUE) |> 
   summarise() |> mutate(Name = "Chail")
-churdhar <- st_read("data/chur.gpkg", quiet = TRUE) |> 
+
+churdhar <- st_read("data/churdhar.gpkg", quiet = TRUE) |> 
   summarise() |> mutate(Name = "Churdhar")
+
 study_area <- bind_rows(mh, chail, churdhar)
 
 ## bounding box for main map
@@ -24,12 +32,15 @@ ssb <- st_bbox(c(xmin = 76.75, ymin = 30.54, xmax = 77.56, ymax = 31.02),
                crs = st_crs(4326)) |> st_as_sfc()
 
 ## Download and save elevation data
-# ssb |> elevatr::get_elev_raster(z = 10) |>
-#   rast() |> crop(vect(ssb)) |> writeRaster("data/site_elev.tif")
+# elevatr::get_elev_raster(locations = st_as_sf(ssb), z = 10) |>
+#   rast() |>
+#   crop(vect(st_as_sf(ssb))) |>
+#   writeRaster("output/site_elev.tif")
 
-elev <- rast("data/site_elev.tif")
+## read elevation data
+elev <- rast("output/site_elev.tif")
 
-## Calculate hillshade
+## Calculate hill shade
 slope  <- terrain(elev, "slope",  unit = "radians")
 aspect <- terrain(elev, "aspect", unit = "radians")
 hs <- shade(slope, aspect)
@@ -48,6 +59,8 @@ ind2 <- st_read("data/site_districts.gpkg", quiet = TRUE) |>
   st_intersection(ssb) |>
   mutate(District = ifelse(test = District %in% c("Ambala", "Patiala"), 
                            yes = NA, no = District))
+
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 ## switch off spherical geometry
 sf_use_s2(FALSE) 
@@ -89,6 +102,8 @@ main_map <-
             legend.text.size = 0.6, legend.title.size = 1,
             inner.margins = 0)
 
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 ## bounding box for inset map
 sbox <- st_bbox(c(xmin = 72, ymin = 30, xmax = 82, ymax = 37),
                 crs = st_crs(4326)) |> st_as_sfc()
@@ -113,6 +128,8 @@ inset_map <- tm_shape(ind1, bbox = st_bbox(sbox)) +
   tm_shape(ssb) + 
   tm_fill(col = "lightpink", alpha = 0.3) + tm_borders(col = "red")
 
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 ## arrange and save maps
 myvp <- grid::viewport(
   x = 0.055, y = 0.95, just = c("left", "top"), 
@@ -124,3 +141,6 @@ tmap_save(main_map, filename = "figs/fig1.pdf", insets_tm = inset_map,
           insets_vp = myvp, height = 5, width = 7, units = "in")
 tmap_save(main_map, filename = "figs/fig1.png", insets_tm = inset_map,
           insets_vp = myvp, height = 5, width = 7, units = "in", dpi = 600)
+
+## remove all variables from the environment
+rm(list = ls())

@@ -8,72 +8,78 @@
 
 ```
 .
+  |- R
+    |- 01_make_site_map.R
+    |- 02_make_climate_diagram.R
+    |- 03_standardise_plant_names.R
+    |- 04_get_elevation_ranges.R
+    |- 05_calculate_species_richness.R
+    |- 06_get_mde_predictions.R
+    |- 07_test_species_sensitivity.R
   |- data
-    |- 0417447-210914110416597.zip
-    |- band_mde.csv
-    |- band_richness.csv
     |- chail_plants.csv
     |- chail.gpkg
-    |- chur_plants.csv
-    |- chur.gpkg
+    |- churdhar_plants.csv
+    |- churdhar.gpkg
     |- ecs22945-sup-0004-datas1.csv
     |- khol_hi_raitan.gpkg
     |- morni_plants.csv
     |- morni.gpkg
-    |- rana_elev_rang.csv
-    |- site_climate_wld.csv
     |- site_districts.gpkg
+    |- siwalik_states.gpkg
+  |- output
+    |- 0417447-210914110416597.zip
+    |- band_mde.csv
+    |- band_richness.csv
+    |- site_climate_wld.csv
     |- site_elev.tif
     |- site_plants_wcvp.csv
-    |- site_plants.csv
     |- site_spec_elev.csv
-    |- siwalik_states.gpkg
-  |- apa6.csl
-  |- calc_richness.R
-  |- credit_author.csv
-  |- extract_climate.R
-  |- index.qmd
+    |- species_sensitivity_mde.csv
+    |- species_sensitivity_richness.csv
   |- README.md
+  |- apa6.csl
+  |- credit_author.csv
+  |- index.qmd
   |- refs.bib
   |- richness-patterns.Rproj
 ```
 
 ## Description of files
 
+The [R](/R) folder contains the scripts used for analysis of the primary data in [`data`](/data) folder and the processed data is stored in [output](/output) folder.
+
 | File name | Description |  
 |-----------|-------------|
-| [0417447-210914110416597.zip](/data/0417447-210914110416597.zip) | Species distribution dataset[^1] downloaded from  [GBIF](https://www.gbif.org/) via `rgbif` package |  
-| [band_mde.csv](/data/band_mde.csv) | Data generated from 10,000 replications of mid-domain effect (MDE) null model[^2] |
-| [band_richness.csv](/data/band_richness.csv) | Estimated species richness for 100-m elevational bands for each site |
+| [0417447-210914110416597.zip](/output/0417447-210914110416597.zip) | Species distribution dataset[^1] downloaded from  [GBIF](https://www.gbif.org/) via `rgbif` package |  
+| [band_mde.csv](/output/band_mde.csv) | Data generated from 10,000 replications of mid-domain effect (MDE) null model[^2] |
+| [band_richness.csv](/output/band_richness.csv) | Estimated species richness for 100-m elevational bands for each site |
 | [chail_plants.csv](/data/chail_plants.csv) | Recorded plant species from literature survey for Chail Wildlife Sanctuary |
 | [chail.gpkg](/data/chail.gpkg) | Digitised spatial boundary for Chail Wildlife Sanctuary |
-| [chur_plants.csv](/data/chur_plants.csv) | Recorded plant species from literature survey for Churdhar Wildlife Sanctuary |
-| [chur.gpkg](/data/chail.gpkg) | Digitised spatial boundary for Churdhar Wildlife Sanctuary |
+| [churdhar_plants.csv](/data/churdhar_plants.csv) | Recorded plant species from literature survey for Churdhar Wildlife Sanctuary |
+| [churdhar.gpkg](/data/churdhar.gpkg) | Digitised spatial boundary for Churdhar Wildlife Sanctuary |
 | [ecs22945-sup-0004-datas1.csv](/data/ecs22945-sup-0004-datas1.csv) | Additional species distribution data from Rana, Price, & Qian ([2019](https://doi.org/10.1002/ecs2.2945))[^3] |
 | [khol_hi_raitan.gpkg](/data/khol_hi_raitan.gpkg) | Digitised spatial boundary for Khol Hi Raitan Wildlife Sanctuary |
 | [morni_plants.csv](/data/morni_plants.csv) | Recorded plant species from literature survey for Morni Hills |
 | [morni.gpkg](/data/morni.gpkg) | Digitised spatial boundary for Morni Hills |
-| [rana_elev_rang.csv](/data/rana_elev_rang.csv) | Species elevational ranges with botanical names standardised according to the *Plants of World Online* ([POWO](https://powo.science.kew.org/)) |
-| [site_climate_wld.csv](/data/site_climate_wld.csv) | Climate dataset from WorldClim2 database[^4] processed for preparing the Walter-Leith Diagrams for study sites |
+| [site_climate_wld.csv](/output/site_climate_wld.csv) | Climate dataset from WorldClim2 database[^4] processed for preparing the Walter-Leith Diagrams for study sites |
 | [site_districts.gpkg](/data/site_districts.gpkg) | Spatial boundaries for Indian districts sharing the bounding box for selected study sites in the Himalayas |
-| [site_elev.tif](/data/site_elev.tif) | Elevation raster data cropped for bounding box of the selected study sites |
-| [site_plants_wcvp.csv](/data/site_plants_wcvp.csv) | Combined species check-list with botanical names standardised according to World Checklist of Vascular Plants (WCVP)[^5] |
-| [site_plants.csv](/data/site_plants.csv) | All recorded plants from literature survey for all selected sites |
-| [site_spec_elev.csv](/data/site_spec_elev.csv) | Finally prepared dataset for standardised unique species and their elevational ranges for selected study sites |
+| [site_elev.tif](/output/site_elev.tif) | Elevation raster data cropped for bounding box of the selected study sites |
+| [site_plants_wcvp.csv](/output/site_plants_wcvp.csv) | Combined species check-list with botanical names standardised according to World Checklist of Vascular Plants (WCVP)[^5] |
+| [site_spec_elev.csv](/output/site_spec_elev.csv) | Finally prepared dataset for standardised unique species and their elevational ranges for selected study sites |
 | [siwalik_states.gpkg](/data/siwalik_states.gpkg) | Spatial boundaries for north-western Indian States covering the Siwalik foothills of Himalayas |
+| [species_sensitivity_mde.csv](/output/species_sensitivity_mde.csv) | Results of sensitivity analysis to test the influence of total number of observed species on the relationship between observed richness and the predictions of mid-domain effect null model |
+| [species_sensitivity_richness.csv](/output/species_sensitivity_richness.csv) | Results of sensitivity analysis to test the influence of total number of observed species on the elevational patterns of plant species richness |
 | [apa6.csl](/apa6.csl) | Citation Style Language citation styles for American Psychological Association 6th edition |
-| [calc_richness.R](/calc_richness.R) | `R` script with function used to calculate species richness from compiled dataset and MDE null model | 
 | [credit_author.csv](/credit_author.csv) | Documentation of each authors' contribution in CRediT (Contributor Roles Taxonomy) author statement |
-| [extract_climate.R](/extract_climate.R) | `R` script to extract climate data from WorldClim2 database and process to prepare Walter-Leith Diagrams for study sites |
-| [index.qmd](/index.qmd) | Quarto markdown file with embedded `R` codes to reproduce the initial draft of manuscript |
+| [index.qmd](/index.qmd) | Quarto markdown file with embedded `R` codes to reproduce the draft of manuscript |
 | [refs.bib](/refs.bib) | Bibliographic entries for literature cited in the manuscript |
-| [site_map.R](/site_map.R) | `R` script to prepare the map for study sites |
 
 ## Codebook for [band_mde.csv](/data/band_mde.csv)
 
 | Column    | Description                                                       |
 |-----------|-------------------------------------------------------------------|
-| Elevation | Upper elevation of each 100-m elevational band in metres |
+| elevation | Upper elevation of each 100-m elevational band in metres |
 | mde_mean  | Mean predicted species richness from 10,000 runs of MDE null model |
 | mde_sd    | Standard deviation for predicted species richness from 10,000 runs of MDE null model |
 | mde_min   | Minimum predicted species richness from 10,000 runs of MDE null model |
@@ -84,11 +90,11 @@
 
 | Column    | Description                                                       |
 |-----------|-------------------------------------------------------------------|
-| Elevation | Upper elevation of each 100-m elevational band in metres |
-| Richness  | Estimated species richness for each 100-m elevational band for selected sites |
+| elevation | Upper elevation of each 100-m elevational band in metres |
+| richness  | Estimated species richness for each 100-m elevational band for selected sites |
 | site      | Name of site for which the elevational species richness was estimated |
 
-## Codebook for [chail_plants.csv](/data/chail_plants.csv), [chur_plants.csv](/data/chur_plants.csv) and [morni_plants.csv](/data/morni_plants.csv)
+## Codebook for [chail_plants.csv](/data/chail_plants.csv), [churdhar_plants.csv](/data/churdhar_plants.csv) and [morni_plants.csv](/data/morni_plants.csv)
 
 | Column      | Description                                                       |
 |-------------|-------------------------------------------------------------------|
@@ -98,17 +104,6 @@
 | powo_dist   | Distribution status (Introduced vs. Native) of plant according to *Plants of World Online* ([POWO](https://powo.science.kew.org/)) |
 
 All other columns refer to citation keys for studies identified through literature survey, i.e., Bhardwaj2017[^6], Champion1968[^7], eFI2022[^8], FOI2022[^9], Kumar2013[^10], Choudhary2007[^11], Choudhary2012[^12], Gupta1998[^13], Radha2019[^14], Subramani2014[^15], Thakur2021a[^16], Balkrishna2018a[^17], Balkrishna2018b[^18], Dhiman2020[^19], Dhiman2021[^20], Singh2014[^21]
-
-## Codebook for [rana_elev_rang.csv](/data/rana_elev_rang.csv)
-
-| Column    | Description                                                       |
-|-----------|-------------------------------------------------------------------|
-| verbatimScientificName | Botanical name given in dataset downloaded from GBIF |
-| taxon_name | Accepted botanical names standardised according to World Checklist of Vascular Plants (WCVP) |
-| taxon_authors | Accepted botanical authorship standardised according to World Checklist of Vascular Plants (WCVP) |
-| LL | Lower elevational limit of the species in Himalayas |
-| UL | Upper elevational limit of the species in Himalayas |
-| IUCN | Status of plant species in IUCN Red List of Threatened Species |
 
 ## Codebook for [site_plants_wcvp.csv](/data/site_plants_wcvp.csv)
 
@@ -124,6 +119,16 @@ All other columns refer to citation keys for studies identified through literatu
 | Morni | Short for Morni Hills |
 | Chail | Short for Chail Wildlife Sanctuary |
 | Churdhar | Short for Churdhar Wildlife Sanctuary |
+
+## Codebook for [species_sensitivity_mde.csv](/output/species_sensitivity_mde.csv) and [species_sensitivity_richness.csv](/output/species_sensitivity_richness.csv)
+
+| Column    | Description                                                       |
+|-----------|-------------------------------------------------------------------|
+| elevation | Upper elevation of each 100-m elevational band in metres |
+| mde       | Predictions of MDE null model |
+| richness  | Estimated species richness |
+| species   | Total number of included species for estimation of species richness and MDE |
+| site      | Name of study site |
 
 ## References
 
