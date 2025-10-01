@@ -1,0 +1,35 @@
+$if(title)$
+\title{$title$$if(thanks)$\thanks{$thanks$}$endif$}
+$endif$
+
+
+$if(subtitle)$
+\usepackage{etoolbox}
+\makeatletter
+\providecommand{\subtitle}[1]{% add subtitle to \maketitle
+  \apptocmd{\@title}{\par {\large #1 \par}}{}{}
+}
+\makeatother
+\subtitle{$subtitle$}
+$endif$
+
+
+$for(by-author)$
+\author[$for(by-author.affiliations)$$it.number$$sep$,$endfor$$if(by-author.attributes.corresponding)$*$endif$]{$by-author.name.literal$}
+$endfor$
+
+
+$for(by-affiliation)$
+\affil[$it.number$]{
+  $if(it.department)$$it.department$, $endif$$it.name$$if(it.address)$, $it.address$$endif$$if(it.city)$, $it.city$$endif$$if(it.postal-code)$ $it.postal-code$$endif$$if(it.country)$, $it.country$$endif$
+}
+$endfor$
+
+$for(by-author)$
+$if(by-author.attributes.corresponding)$
+  \affil[*]{Corresponding author: \href{mailto:$by-author.email$}{$by-author.email$}}
+$endif$
+$endfor$
+
+\date{$date$}
+
