@@ -39,6 +39,7 @@ ssb <- st_bbox(c(xmin = 76.75, ymin = 30.54, xmax = 77.56, ymax = 31.02),
 
 ## read elevation data
 elev <- rast("output/site_elev.tif")
+names(elev) <- "elevation"
 
 ## Calculate hill shade
 slope  <- terrain(elev, "slope",  unit = "radians")

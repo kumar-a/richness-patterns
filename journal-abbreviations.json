@@ -7,6 +7,7 @@
       "Animal Biodiversity and Conservation": "Anim Biodivers Conserv",
       "Annual Review of Ecology, Evolution, and Systematics": "Annu Rev Ecol Evol Syst",
       "Asian Journal of Conservation Biology": "Asian J Conserv Biol",
+      
       "Behavioral Ecology": "Behav Ecol",
       "Biodiversity and Conservation": "Biodivers Conserv",
       "Biological Conservation": "Biol Conserv",
@@ -15,33 +16,43 @@
       "Biometrika": "Biometrika",
       "BioScience": "BioScience",
       "Botanical Journal of the Linnean Society": "Bot J Linn Soc",
+      
       "Cold Spring Harbor Symposia on Quantitative Biology": "Cold Spring Harb Symp Quant Biol",
       "Conservation Science and Practice": "Conserv Sci Pract",
+      
       "Data": "Data",
       "Diversity and Distributions": "Divers Distrib",
+      
       "Ecography": "Ecography",
       "Ecology and Evolution": "Ecol Evol",
       "Ecological Informatics": "Ecol Inform",
       "Ecological Modelling": "Ecol Model",
+      "Ecological Monographs": "Ecol Monogr",
       "Ecological Processes": "Ecol Process",
       "Ecology": "Ecology",
       "Ecology Letters": "Ecol Lett",
       "Ecosphere": "Ecosphere",
       "European Journal of Forest Research": "Eur J For Res",
+      "Environmental Monitoring and Assessment": "Environ Monit Assess",
       "Environmental Research": "Environ Res",
+      
       "Flora": "Flora",
       "Forest Ecosystems": "For Ecosyst",
       "Forestry Studies": "For Stud",
       "Frontiers in Ecology and Evolution": "Front Ecol Evol",
       "Frontiers in Forests and Global Change": "Front For Glob Change",
       "Frontiers of Biogeography": "Front Biogeogr",
+      
       "Global Ecology and Biogeography": "Glob Ecol Biogeogr",
+      
       "Himalayan Geology": "Himal Geol",
       "Human Ecology": "Hum Ecol",
+      
       "International Journal of Climatology": "Int J Climatol",
       "International Journal of Pharma and Bio Sciences": "Int J Pharma Bio Sci",
       "International Journal of Research Studies in Biosciences": "Int J Res Stud Biosci",
       "International Journal of Science and Research": "Int J Sci Res",
+      
       "Journal of Applied Pharmaceutical Science": "J Appl Pharm Sci",
       "Journal of Biogeography": "J Biogeogr",
       "Journal of Computational and Graphical Statistics": "J Comput Graph Stat",
@@ -50,32 +61,40 @@
       "Journal of Non-Timber Forest Products": "J Non-Timber For Prod",
       "Journal of Open Source Software": "J Open Source Softw",
       "Journal of Orchid Society of India": "J Orchid Soc India",
+      "Journal of Plant Ecology": " J Plant Ecol",
       "Journal of Plant Research": "J Plant Res",
       "Journal of Scientific Research": "J Sci Res",
       "Journal of the Indian Institute of Science": "J Indian Inst Sci",
       "Journal of Threatened Taxa": "J Threat Taxa",
       "Journal of Vegetation Science": "J Veg Sci",
+      
       "Manthan": "Manthan",
       "Methods in Ecology and Evolution": "Methods Ecol Evol",
       "Modeling Earth Systems and Environment": "Model Earth Syst Environ",
+      
       "Nature": "Nature",
       "Nature Communications": "Nat Commun",
       "New Phytologist": "New Phytol",
+      
       "Oikos": "Oikos",
+      
       "Plant Archives": "Plant Arch",
       "Plant Ecology & Diversity": "Plant Ecol Divers",
       "PLOS ONE": "PLOS ONE",
       "Proceedings of the National Academy of Sciences": "Proc Natl Acad Sci",
       "Proceedings of the Royal Society B: Biological Sciences": "Proc R Soc B: Biol Sci",
+      
       "Science": "Science",
       "Science Advances": "Sci Adv",
       "Scientific Data": "Sci Data",
       "Scientific Reports": "Sci Rep",
       "Structural Equation Modeling": "Struct Equ Model",
+      
       "The Tribune": "The Tribune",
       "Tigerpaper": "Tigerpaper",
       "Trends in Ecology & Evolution": "Trends Ecol Evol",
       "Tropical Ecology": "Trop Ecol",
+      
       "Water, Air, & Soil Pollution": "Water Air Soil Pollut"
     }
   }

@@ -112,6 +112,10 @@ out_inext <- iNEXT(
 out_inext$AsyEst |>
   write.csv("output/site_richness_rarefaction.csv", row.names = FALSE)
 
-## bind and save the calculated species richness
+## bind and save the calculated species richness based on sample size
 out_inext$iNextEst$size_based |>
   write.csv("output/site_rarefaction_size.csv", row.names = FALSE)
+
+## bind and save the calculated species richness based on coverage
+out_inext$iNextEst$coverage_based |>
+  write.csv("output/site_rarefaction_coverage.csv", row.names = FALSE)
