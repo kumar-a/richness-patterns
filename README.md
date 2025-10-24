@@ -61,8 +61,8 @@
 | [01_make_site_map.R](/R/01_make_site_map.R) | `R` codes to prepare the map for study sites ([fig1.pdf](/figs/fig1.pdf)) |
 | [02_make_climate_diagram.R](/R/02_make_climate_diagram.R) | `R` codes to prepare the climate diagrams for study sites ([fig2.pdf](/figs/fig2.pdf)) |
 | [03_standardise_plant_names.R](/R/03_standardise_plant_names.R) | `R` codes to standardise botanical names according to WCVP (Govaerts et al., [2021](https://doi.org/10.1038/s41597-021-00997-6)). The standardised botanical names are saved as [site_plants_wcvp.csv](/output/site_plants_wcvp.csv) |
-| [04_get_elevation_ranges.R](/R/03_get_elevation_ranges.R) | `R` codes to retrieve the species elevational ranges from published database (Rana & Rawat [2017](https://doi.org/10.3390/data2040036), [2019](https://doi.org/10.15468/zdeuix)) |
-| [05_calculate_richness.R](/R/05_calculate_richness.R) | `R` codes with function used to calculate species richness from compiled dataset for each study site |
+| [04_get_elevation_ranges.R](/R/04_get_elevation_ranges.R) | `R` codes to retrieve the species elevational ranges from published database (Rana & Rawat [2017](https://doi.org/10.3390/data2040036), [2019](https://doi.org/10.15468/zdeuix)) |
+| [05_calculate_species_richness.R](/R/05_calculate_species_richness.R) | `R` codes with function used to calculate species richness from compiled dataset for each study site |
 | [06_get_mde_predictions.R](/R/06_get_mde_predictions.R) | `R` codes to simulate mid-domain effect predictions |
 | [07_test_species_sensitivity.R](/R/07_test_species_sensitivity.R) | `R` codes to test the effects of number of observed species |
 | [08_calculate_rarefaction_curves.R](/R/08_calculate_rarefaction_curves.R) | `R` codes for calculating the coverage and size-based rarefaction curves for estimating species richness for each study site |
@@ -87,15 +87,15 @@
 
 | File name | Description |  
 |-----------|-------------|
-| [0417447-210914110416597.zip](/output/0417447-210914110416597.zip) | Species distribution dataset[^1] downloaded from  [GBIF](https://www.gbif.org/) via `rgbif` package using [04_get_elevation_ranges.R](/R/03_get_elevation_ranges.R) script | 
+| [0417447-210914110416597.zip](/output/0417447-210914110416597.zip) | Species distribution dataset[^1] downloaded from  [GBIF](https://www.gbif.org/) via `rgbif` package using [04_get_elevation_ranges.R](/R/04_get_elevation_ranges.R) script | 
 | [band_mde.csv](/output/band_mde.csv) | Data generated from 10,000 replications of mid-domain effect (MDE) null model[^2] using [06_get_mde_predictions.R](/R/06_get_mde_predictions.R) script |
-| [band_richness.csv](/output/band_richness.csv) | Estimated species richness for 100-m elevational bands for each site using the [05_calculate_richness.R](/R/05_calculate_richness.R) script |
+| [band_richness.csv](/output/band_richness.csv) | Estimated species richness for 100-m elevational bands for each site using the [05_calculate_species_richness.R](/R/05_calculate_species_richness.R) script |
 | [site_climate_wld.csv](/output/site_climate_wld.csv) | Climate dataset from WorldClim2 database[^4] processed for preparing the Walter-Leith Diagrams for study sites using the [02_make_climate_diagram.R](/R/02_make_climate_diagram.R) script |
 | [site_elev.tif](/output/site_elev.tif) | Elevation raster data cropped for bounding box of the selected study sites. The `R` code used to download this file is available in [01_make_site_map.R](/R/01_make_site_map.R) script |
 | [site_plants_wcvp.csv](/output/site_plants_wcvp.csv) | Combined species check-list with botanical names standardised according to World Checklist of Vascular Plants (WCVP)[^5] using the [03_standardise_plant_names.R](/R/03_standardise_plant_names.R) script |
 | [site_rarefaction_coverage.csv](/output/site_rarefaction_coverage.csv) | Sample coverage-based rarefaction curves for species richness estimation using the script [08_calculate_rarefaction_curves.R](/R/08_calculate_rarefaction_curves.R) |
 | [site_rarefaction_size.csv](/output/site_rarefaction_size.csv) | Sample size-based rarefaction curves for species richness estimation using the [08_calculate_rarefaction_curves.R](/R/08_calculate_rarefaction_curves.R) script |
-| [site_spec_elev.csv](/output/site_spec_elev.csv) | Finally prepared dataset for standardised unique species and their elevational ranges for selected study sites using the [04_get_elevation_ranges.R](/R/03_get_elevation_ranges.R) script |
+| [site_spec_elev.csv](/output/site_spec_elev.csv) | Finally prepared dataset for standardised unique species and their elevational ranges for selected study sites using the [04_get_elevation_ranges.R](/R/04_get_elevation_ranges.R) script |
 | [species_sensitivity_mde.csv](/output/species_sensitivity_mde.csv) | Results of sensitivity analysis to test the influence of total number of observed species on the relationship between observed richness and the predictions of mid-domain effect null model using the [07_test_species_sensitivity.R](/R/07_test_species_sensitivity.R) script |
 | [species_sensitivity_richness.csv](/output/species_sensitivity_richness.csv) | Results of sensitivity analysis to test the influence of total number of observed species on the elevational patterns of plant species richness using the [07_test_species_sensitivity.R](/R/07_test_species_sensitivity.R) script |
 
